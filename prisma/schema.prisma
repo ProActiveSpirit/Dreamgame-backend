@@ -1,0 +1,262 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["rhel-openssl-1.0.x"]
+}
+
+// Enum for Customer Status
+enum CustomerStatus {
+  ACTIVE
+  INACTIVE
+  TEST
+}
+
+model Customer {
+  id               String           @id @default(uuid())
+  name             String
+  email            String           @unique
+  generatedEmail   String?          @unique
+  website          String
+  status           CustomerStatus
+  twoFactorEnabled Boolean          @default(false)
+  apiLogs          APILog[]         @relation(name: "CustomerToAPILog")
+  salesOrders      SalesOrder[]     @relation(name: "CustomerToSalesOrder")
+  ipAddress        IPAddress?       @relation(name: "CustomerToIPAddress", fields: [ipAddressId], references: [id])
+  ipAddressId      String?          @unique
+  crmData          CRMData[]        @relation(name: "CustomerToCRMData")
+  generatedEmails  GeneratedEmail[] @relation(name: "CustomerToGeneratedEmail")
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+}
+
+// IPAddress Model
+model IPAddress {
+  id        String    @id @default(uuid())
+  ip        String    @unique
+  country   String
+  customer  Customer? @relation(name: "CustomerToIPAddress")
+  createdAt DateTime  @default(now())
+}
+
+// GeneratedEmail Model
+model GeneratedEmail {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  customerId String
+  purpose    String // e.g., "Test", "Promotional"
+  createdAt  DateTime @default(now())
+  customer   Customer @relation(name: "CustomerToGeneratedEmail", fields: [customerId], references: [id])
+}
+
+model Product {
+  id                   String          @id @default(uuid())
+  name                 String
+  availableKeysInStock Int
+  salesOrders          SalesOrder[]    @relation(name: "ProductSales")
+  provider             String
+  region               String
+  sku                  String          @unique
+  pricing              Pricing?        @relation(name: "PricingToProduct")
+  publisher            String
+  availabilityStatus   String
+  promotionStart       DateTime?
+  promotionEnd         DateTime?
+  purchaseOrders       PurchaseOrder[] @relation(name: "ProductPurchase")
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  gameCode             String
+  stockQty             StockQty?       @relation(name: "ProductToStockQty")
+  packages             Package[]       @relation(name: "PackageToProduct")
+}
+
+// StockQty Model
+model StockQty {
+  id                        String           @id @default(uuid())
+  generatedKeys             Int
+  pendingKeysToGenerate     Int
+  soldKeys                  Int
+  soldKeysPendingGeneration Int
+  product                   Product          @relation(name: "ProductToStockQty", fields: [productId], references: [id])
+  productId                 String           @unique
+  activationKeys            ActivationKeys[] @relation(name: "ActivationKeysToStockQty")
+}
+
+model Pricing {
+  id                 String   @id @default(uuid())
+  cost               Float
+  promoPercent       Float
+  srpPriceWithVAT    Float
+  srpPriceWithoutVAT Float
+  productId          String?  @unique
+  product            Product? @relation(name: "PricingToProduct", fields: [productId], references: [id])
+}
+
+model SalesOrder {
+  id                String              @id @default(uuid())
+  salesOrderNumber  String              @unique
+  customerId        String
+  productId         String
+  sku               String // Ensure SKU is included for linking
+  salesIncVat       Float
+  salesExcVat       Float
+  expectedCost      Float
+  calculatedAvgCost Float?
+  quantity          Int
+  salesCurrency     String
+  totalPrice        Float
+  product           Product             @relation(name: "ProductSales", fields: [productId], references: [id])
+  createdOn         DateTime            @default(now())
+  confirmed         Boolean             @default(false)
+  customer          Customer            @relation(name: "CustomerToSalesOrder", fields: [customerId], references: [id])
+  packages          Package[]           @relation(name: "PackageToSalesOrder")
+  purchaseOrders    PurchaseOrderLink[] // Link to PurchaseOrder through intermediary model
+}
+
+model PurchaseOrder {
+  id           String              @id @default(uuid())
+  productId    String
+  sku          String // Ensure SKU is included for linking
+  product      Product             @relation(name: "ProductPurchase", fields: [productId], references: [id])
+  productName  String
+  provider     String
+  quantity     Int
+  sales        Float
+  expectedCost Float
+  costIncVat   Float
+  stocking     String
+  job          Int
+  status       String
+  region       String
+  startDatePOs DateTime
+  endDatePOs   DateTime
+  createdOn    DateTime            @default(now())
+  salesOrders  PurchaseOrderLink[] // Link to SalesOrder through intermediary model
+}
+
+model PurchaseOrderLink {
+  id              String        @id @default(uuid())
+  salesOrderId    String
+  purchaseOrderId String
+  salesOrder      SalesOrder    @relation(fields: [salesOrderId], references: [id])
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
+  sku             String
+}
+
+// BillingInformation Model
+model BillingInformation {
+  id              String @id @default(uuid())
+  name            String
+  email           String
+  address         String
+  zipcode         String
+  city            String
+  state           String
+  countryCode     String
+  region          String
+  defaultCurrency String
+}
+
+// ActivationKeys Model
+model ActivationKeys {
+  id               String   @id @default(uuid())
+  quantity         Int
+  stockQtyId       String
+  stockQty         StockQty @relation(name: "ActivationKeysToStockQty", fields: [stockQtyId], references: [id])
+  pendingStocks    Int
+  processingStocks Boolean
+  totalKey         Int
+  customerUserId   String
+}
+
+// Package Model
+model Package {
+  id             String     @id @default(uuid())
+  product        Product    @relation(name: "PackageToProduct", fields: [productId], references: [id])
+  salesOrderId   String
+  salesOrder     SalesOrder @relation(name: "PackageToSalesOrder", fields: [salesOrderId], references: [id])
+  customerUserId String
+  productId      String
+  createdOn      DateTime   @default(now())
+  startDate      DateTime
+  orderDate      DateTime
+  sent           Boolean
+  A              Boolean
+  C              Boolean
+}
+
+// BestSeller Model
+model BestSeller {
+  id        String   @id @default(uuid())
+  name      String
+  SKU       String
+  soldCount Int
+  createdOn DateTime @default(now())
+}
+
+// CustomerSalesReport Model
+model CustomerSalesReport {
+  id        String @id @default(uuid())
+  name      String
+  yesterday Float
+  today     Float
+  lastMonth Float
+  thisMonth Float
+  lastYear  Float
+  allTime   Float
+}
+
+// ProviderPurchaseReport Model
+model ProviderPurchaseReport {
+  id                  String @id @default(uuid())
+  name                String
+  thisWeekIncPending  Float
+  nextWeekPending     Float
+  yesterday           Float
+  todayIncPending     Float
+  lastMonth           Float
+  thisMonthIncPending Float
+  lastYear            Float
+}
+
+// ProviderMonthlySalesReport Model
+model ProviderMonthlySalesReport {
+  id       String @id @default(uuid())
+  month    Int
+  nintendo Float
+  nexway   Float
+  epay     Float
+  total    Float
+}
+
+// MonthlyPurchased Model
+model MonthlyPurchased {
+  id       String @id @default(uuid())
+  month    Int
+  nintendo Float
+  nexway   Float
+  epay     Float
+  total    Float
+}
+
+// APILog Model
+model APILog {
+  id           String    @id @default(uuid()) // LogID as a unique identifier
+  customerId   String? // Foreign key referencing Customer
+  customer     Customer? @relation(name: "CustomerToAPILog", fields: [customerId], references: [id])
+  requestData  Json // Data sent to API, using Json type for flexibility
+  responseData Json // Data received from API, also using Json type
+  timestamp    DateTime  @default(now()) // Time of interaction
+}
+
+// CRMData Model
+model CRMData {
+  id               String   @id @default(uuid()) // CRMID as a unique identifier
+  customerId       String // Foreign key referencing Customer
+  interactionNotes String? // Notes on customer interactions
+  lastUpdated      DateTime @default(now()) @updatedAt // Timestamp for last update
+  customer         Customer @relation(name: "CustomerToCRMData", fields: [customerId], references: [id])
+}
