@@ -3,9 +3,9 @@ const router = express.Router();
 const {
   getTokenHandler,
   invalidateTokenHandler
-} = require("../../controllers/nintendo/authController");
+} = require("@controllers/nintendo/authController");
 
-router.post("/auth/token", getTokenHandler);
-router.post("/auth/invalidate", invalidateTokenHandler);
+router.post("/token", getTokenHandler);
+router.post("/invalidate", invalidateTokenHandler);
 
 module.exports = router;

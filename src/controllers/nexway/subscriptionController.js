@@ -2,7 +2,7 @@ const {
   getSubscriptionStatus,
   cancelSubscription,
   renewSubscription
-} = require("../../services/nexway/subscriptionManagement");
+} = require("@services/nexway/subscriptionManagement");
 
 const hostURL = "https://api.nexway.store";
 const secret = process.env.CLIENT_SECRET;

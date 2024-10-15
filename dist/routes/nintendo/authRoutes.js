@@ -2,7 +2,7 @@
 
 var express = require("express");
 var router = express.Router();
-var _require = require("../../controllers/nintendo/authController"),
+var _require = require("@controllers/nintendo/authController"),
   getTokenHandler = _require.getTokenHandler,
   invalidateTokenHandler = _require.invalidateTokenHandler;
 router.post("/auth/token", getTokenHandler);

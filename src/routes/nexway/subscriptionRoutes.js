@@ -4,10 +4,10 @@ const {
   getSubscriptionStatusHandler,
   cancelSubscriptionHandler,
   renewSubscriptionHandler
-} = require("../../controllers/nexway/subscriptionController");
+} = require("@controllers/nexway/subscriptionController");
 
-router.post("/subscription/status", getSubscriptionStatusHandler);
-router.put("/subscription/cancel", cancelSubscriptionHandler);
-router.put("/subscription/renew", renewSubscriptionHandler);
+router.post("/status", getSubscriptionStatusHandler);
+router.put("/cancel", cancelSubscriptionHandler);
+router.put("/renew", renewSubscriptionHandler);
 
 module.exports = router;

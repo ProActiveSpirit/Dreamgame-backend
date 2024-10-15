@@ -1,10 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
+require('module-alias/register');
 
-const nexwayRoutes = require("./routes/nexway");
-const nintendoRoutes = require("./routes/nintendo");
-const epayRoutes = require("./routes/epay");
+const apiRoute = require("@routes/api");
 
 const app = express();
 
@@ -12,10 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Use the combined routes from the index.js file
-app.use("/api/nexway", nexwayRoutes);
-app.use("/api/nintendo", nintendoRoutes);
-app.use("/api/epay", epayRoutes);
+app.use("/api" , apiRoute);
 
 const PORT = 5000;
 

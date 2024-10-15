@@ -2,7 +2,7 @@ const {
   getOrder,
   getOrderDownloadInfo,
   updateDownloadTime
-} = require("../../services/nexway/orderManagement");
+} = require("@services/nexway/orderManagement");
 
 const hostURL = "https://api.nexway.store"; // or use the staging URL
 const secret = process.env.CLIENT_SECRET;

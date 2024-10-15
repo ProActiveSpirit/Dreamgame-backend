@@ -3,9 +3,9 @@ const router = express.Router();
 const {
   getProductFeedHandler,
   getOperatingSystemsHandler
-} = require("../../controllers/nexway/catalogController");
+} = require("@controllers/nexway/catalogController");
 
-router.get("/catalog/product-feed", getProductFeedHandler);
-router.get("/catalog/os-list", getOperatingSystemsHandler);
+router.get("/product-feed", getProductFeedHandler);
+router.get("/os-list", getOperatingSystemsHandler);
 
 module.exports = router;

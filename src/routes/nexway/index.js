@@ -8,10 +8,10 @@ const crossSellRoutes = require("./crossSellRoutes");
 
 const router = express.Router();
 
-router.use(authRoutes);
-router.use(catalogRoutes);
-router.use(orderRoutes);
-router.use(subscriptionRoutes);
-router.use(crossSellRoutes);
+router.use('/auth', authRoutes);
+router.use('/catalog', catalogRoutes);
+router.use('/order', orderRoutes);
+router.use('/subscription', subscriptionRoutes);
+router.use('/cross-sell',crossSellRoutes);
 
 module.exports = router;
