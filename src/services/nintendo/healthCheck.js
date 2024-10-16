@@ -6,8 +6,6 @@ async function checkHealth() {
     // Example: Check database connection
     await prisma.$queryRaw`SELECT 1`; // Simple query to check database response
 
-    // If other checks are necessary, add them here
-
     return { errorCode: null }; // No error code means everything is fine
   } catch (error) {
     console.error('Health check failed:', error);
