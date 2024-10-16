@@ -3,12 +3,10 @@ const prisma = new PrismaClient();
 
 async function reservation(storeID, transactionID, codeAcquisition) {
   let reservations = [];
-  let successCount = 0;
   let skus = [];
 
   try {
     for (const { sku, qty } of codeAcquisition) {
-      const first = await prisma.nintendoData.findFirst({});
       const record = await prisma.nintendoData.findMany({
         where: {
           product_code_txt: {
@@ -19,7 +17,6 @@ async function reservation(storeID, transactionID, codeAcquisition) {
       });
 
       if (record.length > 0) {
-        successCount++;
         reservations.push({ sku, status: 0 });
       } else {
         reservations.push({ sku, status: 1, errorCode: 'E4007' });

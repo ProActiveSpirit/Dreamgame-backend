@@ -5,12 +5,15 @@ async function processFulfillment(storeID, transactionID) {
   let fulfillments = [];
 
   try {
-    const record = await prisma.transaction.findMany({
-      where: {
-        transactionID: transactionID
-      },
-    });
-
+    const record = await prisma.transaction.findMany({});
+    console.log("allRecord" , record);
+    // const record = await prisma.transaction.findUnique({
+    //   where: {
+    //     transactionID: transactionID
+    //   },
+    // });
+    
+    console.log("fulfillment record" , record);
     const skus = record.sku // Example SKUs
 
     for (const sku of skus) {
