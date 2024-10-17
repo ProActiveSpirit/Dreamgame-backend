@@ -8,7 +8,7 @@ async function processCombinedReservationFulfillment(storeID, transactionID, cod
 
   try {
     for (const { sku, qty } of codeAcquisition) {
-      const record = await prisma.nintendoData.findMany({
+      const records = await prisma.nintendoData.findMany({
         where: {
           product_code_txt: {
             has: sku,
@@ -16,9 +16,7 @@ async function processCombinedReservationFulfillment(storeID, transactionID, cod
           eshop_removed_b: false,
         },
       });
-      const reservationSuccess = Math.random() > 0.3; // Simulating reservation success
-
-      if (reservationSuccess) {
+      if (records.length > 0) {
         // Fulfillment logic: Generate codes for each SKU
         let codes = [];
         for (let i = 0; i < qty; i++) {
@@ -27,6 +25,7 @@ async function processCombinedReservationFulfillment(storeID, transactionID, cod
             downloadNumber: generateDownloadNumber()
           });
         }
+
         fulfillments.push({
           sku,
           codes,
@@ -44,23 +43,42 @@ async function processCombinedReservationFulfillment(storeID, transactionID, cod
       }
     }
 
-    // If all SKUs are processed successfully, no error code is needed
-    if (overallStatus === 0) {
-      return {
-        storeID,
-        transactionID,
-        status: 0,
-        fulfillments
-      };
-    } else {
-      return {
-        storeID,
-        transactionID,
-        status: overallStatus,
-        errorCode,
-        fulfillments
-      };
+    // Save the transaction and fulfillments into the database
+    if( overallStatus == 0) {
+      const transactionData = await prisma.transaction.create({
+        data: {
+          transactionID,
+          status: overallStatus,
+          store: {
+            connectOrCreate: {
+              where: { storeID },
+              create: { storeID }
+            }
+          },
+          fulfillments: {
+            create: fulfillments.map(f => ({
+              sku: f.sku,
+              status: f.status,
+              codes: {
+                create: f.codes?.map(c => ({
+                  controlNumber: c.controlNumber,
+                  downloadNumber: c.downloadNumber
+                })) || []
+              },
+              // errorCode: f.errorCode || null
+            }))
+          }
+        }
+      });
     }
+
+    return {
+      storeID,
+      transactionID,
+      status: overallStatus,
+      errorCode: errorCode || null,
+      fulfillments
+    };
   } catch (error) {
     console.error('Error processing combined reservation and fulfillment:', error);
     throw error;
