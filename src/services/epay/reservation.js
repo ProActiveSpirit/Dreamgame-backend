@@ -22,13 +22,10 @@ async function reservation(storeID, transactionID, codeAcquisition) {
 
   try {
     for (const { sku, qty } of codeAcquisition) {
-      const record = await prisma.nintendoData.findMany({
+      const record = await prisma.EpayData.findMany({
         where: {
-          product_code_txt: {
-            has: sku,
+          sku: sku,
           },
-          eshop_removed_b: false,
-        },
       });
 
       if (record.length > 0) {
