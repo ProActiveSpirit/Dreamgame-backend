@@ -3,21 +3,22 @@ const prisma = new PrismaClient();
 
 async function revokeCode(storeID, controlNumber) {
   try {
-
-    const result = await prisma.nintendoData.updateMany({
-      where: { controlNumber: controlNumber, storeID: storeID },
-      data: { status: 'REVOKED' }, 
+    let status = 0 ;
+    let revokeResult = 'REVOKED';
+    const result = await prisma.code.findMany({
+      where: { controlNumber: controlNumber}
     });
 
     if (result.count === 0) {
-      throw new Error('Code not found or already revoked');
+      status = 1;
+      revokeResult = 'IRREVOCABLE';
     }
-
+    
     const response = {
       storeID,
       controlNumber,
-      status: 0, 
-      revokeResult: 'REVOKED'
+      status: status, 
+      revokeResult: revokeResult
     };
 
     return response;
