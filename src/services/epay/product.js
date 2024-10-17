@@ -1,3 +1,4 @@
+const { Prisma } = require("@prisma/client");
 const fs = require("fs");
 const path = require("path");
 
@@ -23,6 +24,13 @@ async function getProducts() {
 
     // Map the data to create the desired output
     const products = names.map((name, index) => {
+      Prisma.EpayData.create({
+        data: {
+          name: name.trim(),
+          price: parseFloat(prices[index].trim()),
+          sku: skus[index].trim(),
+        }
+      })
       return {
         name: name.trim(),
         stock: "Stock",
@@ -35,7 +43,6 @@ async function getProducts() {
         createdAt: "   "
       };
     });
-
     return products;
   } catch (error) {
     throw new Error(`Failed to get products: ${error.message}`);

@@ -360,3 +360,9 @@ model Code {
   fulfillment    Fulfillment    @relation(fields: [fulfillmentId], references: [id])
   fulfillmentId  Int
 }
+
+model EpayData {
+  id             Int            @id @default(autoincrement())
+  name           String
+  sku            String
+}
