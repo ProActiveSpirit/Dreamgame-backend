@@ -5,6 +5,21 @@ async function reservation(storeID, transactionID, codeAcquisition) {
   let reservations = [];
   let skus = [];
 
+  const existingTransaction = await prisma.transaction.findUnique({
+    where: {
+      transactionID,
+    },
+  });
+  
+  if (existingTransaction) {
+    return {
+      storeID,
+      transactionID,
+      status: 1,
+      errorCode: 'E4031'
+    };
+  }
+
   try {
     for (const { sku, qty } of codeAcquisition) {
       const record = await prisma.nintendoData.findMany({
@@ -30,16 +45,23 @@ async function reservation(storeID, transactionID, codeAcquisition) {
       overallStatus = 0; // Successful completion
       await prisma.transaction.create({
         data: {
-          storeID: storeID,
-          transactionID: transactionID,
-          sku: skus,
-          // status: 'REDEEMABLE',  // Example status
-          // redeemedDateAt: null,  // Example redeemed date
-          // revokedDateAt: null,  // Example revoked date (null if not revoked)
+          transactionID,
+          status: overallStatus,
+          store: {
+            connectOrCreate: {
+              where: { storeID },
+              create: { storeID }
+            }
+          },
+          fulfillments: {
+            create: reservations.map(r => ({
+              sku: r.sku,
+              status: r.status,
+              // errorCode: r.errorCode || null
+            }))
+          }
         }
       });
-      const transactionss = await prisma.transaction.findMany({});
-      console.log("transactionss" , transactionss);
     } else if (reservations.every(r => r.status === 1)) {
       overallStatus = 1; // Abnormal termination
     } else {
