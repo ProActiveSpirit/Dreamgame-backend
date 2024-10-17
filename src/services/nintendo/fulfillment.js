@@ -5,13 +5,11 @@ async function processFulfillment(storeID, transactionID) {
   let fulfillments = [];
 
   try {
-    const record = await prisma.transaction.findMany({});
-    console.log("allRecord" , record);
-    // const record = await prisma.transaction.findUnique({
-    //   where: {
-    //     transactionID: transactionID
-    //   },
-    // });
+    const record = await prisma.transaction.findFirst({
+      where: {
+        transactionID: transactionID
+      },
+    });
     
     console.log("fulfillment record" , record);
     const skus = record.sku // Example SKUs
@@ -58,7 +56,7 @@ async function processFulfillment(storeID, transactionID) {
       storeID,
       transactionID,
       status: overallStatus,
-      fulfillments: fulfillments.filter(f => f.status !== 0), // Include only non-zero status fulfillments
+      fulfillments: fulfillments.filter(f => f.codes.status !== 0), // Include only non-zero status fulfillments
     };
 
     if (overallStatus !== 0) {

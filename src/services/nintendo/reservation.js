@@ -28,10 +28,18 @@ async function reservation(storeID, transactionID, codeAcquisition) {
     let overallStatus;
     if (reservations.every(r => r.status === 0)) {
       overallStatus = 0; // Successful completion
-      prisma.transaction.create({
-        transactionID: transactionID,
-        sku: skus,
-      })
+      await prisma.transaction.create({
+        data: {
+          storeID: storeID,
+          transactionID: transactionID,
+          sku: skus,
+          // status: 'REDEEMABLE',  // Example status
+          // redeemedDateAt: null,  // Example redeemed date
+          // revokedDateAt: null,  // Example revoked date (null if not revoked)
+        }
+      });
+      const transactionss = await prisma.transaction.findMany({});
+      console.log("transactionss" , transactionss);
     } else if (reservations.every(r => r.status === 1)) {
       overallStatus = 1; // Abnormal termination
     } else {

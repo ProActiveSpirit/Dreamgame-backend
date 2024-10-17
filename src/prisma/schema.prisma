@@ -332,7 +332,7 @@ model Transaction {
   storeID          String
   transactionID    String
   sku              String[]
-  status           String
+  status           String?
   redeemedDateAt   DateTime?
   revokedDateAt    DateTime?
 }

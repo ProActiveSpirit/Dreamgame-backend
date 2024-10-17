@@ -8,10 +8,6 @@ async function processCombinedReservationFulfillment(storeID, transactionID, cod
 
   try {
     for (const { sku, qty } of codeAcquisition) {
-      // Simulate reservation and fulfillment logic
-      // Replace this with actual logic and database interactions
-
-      // Example logic: Check if SKUs can be reserved
       const reservationSuccess = Math.random() > 0.3; // Simulating reservation success
 
       if (reservationSuccess) {
@@ -23,7 +19,7 @@ async function processCombinedReservationFulfillment(storeID, transactionID, cod
             downloadNumber: `ABCDEFGHIJKLM${Math.floor(Math.random() * 1000)}`
           });
         }
-
+zz
         fulfillments.push({
           sku,
           codes,
