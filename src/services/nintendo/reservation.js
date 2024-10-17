@@ -56,6 +56,7 @@ async function reservation(storeID, transactionID, codeAcquisition) {
           fulfillments: {
             create: reservations.map(r => ({
               sku: r.sku,
+              qty: qty,
               status: r.status,
               // errorCode: r.errorCode || null
             }))

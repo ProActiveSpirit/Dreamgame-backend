@@ -346,6 +346,7 @@ model Fulfillment {
   id             Int            @id @default(autoincrement())
   sku            String         
   status         Int
+  qty            Int
   codes          Code[]
   transaction    Transaction    @relation(fields: [transactionId], references: [id])
   transactionId  Int
@@ -355,6 +356,7 @@ model Code {
   id             Int            @id @default(autoincrement())
   controlNumber  String
   downloadNumber String
+  status         String
   fulfillment    Fulfillment    @relation(fields: [fulfillmentId], references: [id])
   fulfillmentId  Int
 }

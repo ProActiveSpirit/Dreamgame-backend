@@ -12,7 +12,7 @@ async function getProducts() {
   // Loop through each country code and fetch data
   for (const countryCode of europeanCountryCodes) {
     const options = {
-      limit: 10, // Adjust the limit if needed
+      limit: 5, // Adjust the limit if needed
       locale: countryCode.toLowerCase(), // Use the lowercase country code
     };
 
