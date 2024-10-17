@@ -363,6 +363,6 @@ model Code {
 
 model EpayData {
   id             Int            @id @default(autoincrement())
-  name           String
+  price          Float
   sku            String
 }
