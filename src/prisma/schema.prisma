@@ -326,3 +326,21 @@ model NintendoData {
   downloads_rank_i Int?
   version  String?
 }
+
+model Transaction {
+  id               String   @id @default(uuid()) 
+  storeID          String
+  transactionID    String
+  sku              String[]
+  status           String?
+  redeemedDateAt   DateTime?
+  revokedDateAt    DateTime?
+}
+
+model skuNumber {
+  id               String   @id @default(uuid()) 
+  storeID          String
+  sku              String
+  controlNumber    String
+  downloadNumber   String
+}

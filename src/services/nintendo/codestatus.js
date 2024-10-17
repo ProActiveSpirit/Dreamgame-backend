@@ -3,8 +3,22 @@ const prisma = new PrismaClient();
 
 async function checkCodeStatus(storeID, controlNumber) {
   try {
-    const transactionID = "C12345_T1574995942312"; 
-    const codeStatus = "REVOKED"; 
+
+    const record = prisma.skuNumber.findMany({
+      where: {
+        controlNumber: controlNumbers
+      }
+    });
+
+    const transaction = prisma.transaction.findMany({
+      where: {
+        sku: {
+          has:record.sku
+        }
+      }
+    })
+    const transactionID = transaction.transactionID; 
+    const codeStatus = transaction.status; 
     const redeemedDateAt = "20202001T090000Z"; 
     const revokedDateAt = "20202005T180000Z"; 
 
