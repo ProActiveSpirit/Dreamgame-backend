@@ -6,6 +6,21 @@ async function processCombinedReservationFulfillment(storeID, transactionID, cod
   let overallStatus = 0;
   let errorCode = null;
 
+  const existingTransaction = await prisma.transaction.findUnique({
+    where: {
+      transactionID,
+    },
+  });
+  
+  if (existingTransaction) {
+    return {
+      storeID,
+      transactionID,
+      status: 1,
+      errorCode: 'E4031'
+    };
+  }
+
   try {
     for (const { sku, qty } of codeAcquisition) {
       const records = await prisma.nintendoData.findMany({
