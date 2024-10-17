@@ -71,7 +71,7 @@ async function processFulfillment(storeID, transactionID) {
   }
 }
 
-function generateControlNumber(prefix = 'ABCD') {
+function generateControlNumber(prefix = 'eskf') {
   const randomPart = Math.floor(100000 + Math.random() * 900000); // Random 6-digit number
   const counter = Date.now(); // Use current timestamp for simplicity
   return `${prefix}-${randomPart}-${counter}`;
