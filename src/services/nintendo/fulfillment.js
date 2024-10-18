@@ -2,76 +2,70 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function processFulfillment(storeID, transactionID) {
-  let fulfillments = [];
+
+  const transaction = await prisma.transaction.findUnique({
+    where: { transactionID },
+    include: { fulfillments: true },
+  });
+
+  if (!transaction) {
+    throw new Error(`Transaction with ID ${transactionID} not found.`);
+  }
+
+  const fulfillments = transaction.fulfillments.map(f => {
+    if (f.status === 0) {
+      // Generate codes for the fulfillment
+      const controlNumber = generateControlNumber();
+      const downloadNumber = generateDownloadNumber();
+      const status = controlNumber != null && downloadNumber != null;
+      const codes = Array.from({ length: f.qty }, () => ({
+        controlNumber: controlNumber,
+        downloadNumber: downloadNumber,
+        status: 0,
+      }));
+
+      return {
+        ...f,
+        codes,
+        status: 0
+      };
+    }
+    else
+      return f;
+  });
 
   try {
-    const record = await prisma.transaction.findFirst({
-      where: {
-        transactionID: transactionID
-      },
-    });
-    
-    console.log("fulfillment record" , record);
-    const skus = record.sku // Example SKUs
-
-    for (const sku of skus) {
-      const controlNumber = generateControlNumber()
-      const downloadNumber = generateDownloadNumber()
-      const codes = [
-        {
-          controlNumber: controlNumber,
-          downloadNumber: downloadNumber,
-          status: 0,
-        },
-        // {
-        //   status: Math.random() > 0.5 ? 0 : 1,
-        //   errorCode: 'E2345',
-        // }
-      ];
-
-      prisma.skuNumber.create({
-        storeID,
-        sku:sku,
-        controlNumber:controlNumber,
-        downloadNumber:downloadNumber
-      })
-
-      const skuStatus = codes.every(code => code.status === 0) ? 0 : 2;
-      let errorCode;
-      if (skuStatus !== 0) {
-        errorCode = 'E4951';  // Set SKU level error code if needed
+    for (const fulfillment of fulfillments) {
+      if (fulfillment.codes) {
+        await prisma.fulfillment.update({
+          where: { id: fulfillment.id },
+          data: {
+            codes: {
+              create: fulfillment.codes.map(c => ({
+                controlNumber: c.controlNumber,
+                downloadNumber: c.downloadNumber,
+                status:0
+              })),
+            },
+            status: fulfillment.status,
+          },
+        });
       }
-
-      fulfillments.push({
-        sku,
-        codes: codes.filter(code => code.status === 0 || code.errorCode), // Include only valid code entries
-        status: skuStatus,
-        errorCode: errorCode
-      });
     }
 
-    const overallStatus = fulfillments.every(f => f.status === 0) ? 0 : 2;
-
-    const response = {
+    return {
       storeID,
       transactionID,
-      status: overallStatus,
-      fulfillments: fulfillments.filter(f => f.codes.status !== 0), // Include only non-zero status fulfillments
+      status: 0,
+      fulfillments
     };
-
-    if (overallStatus !== 0) {
-      response.errorCode = 'E4951'; // Set overall error code if not all are successful
-    }
-
-    return response;
-
   } catch (error) {
-    console.error('Error processing fulfillment:', error);
+    console.error('Error processing combined reservation and fulfillment:', error);
     throw error;
   }
 }
 
-function generateControlNumber(prefix = 'ABCD') {
+function generateControlNumber(prefix = 'eskf') {
   const randomPart = Math.floor(100000 + Math.random() * 900000); // Random 6-digit number
   const counter = Date.now(); // Use current timestamp for simplicity
   return `${prefix}-${randomPart}-${counter}`;

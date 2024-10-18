@@ -10,6 +10,7 @@ const secret = process.env.CLIENT_SECRET;
 async function getSubscriptionStatusHandler(req, res) {
   try {
     const { partnerOrderNumber, subscriptionId } = req.body;
+    console.log("req.body", req.body);
     const status = await getSubscriptionStatus(
       hostURL,
       partnerOrderNumber,

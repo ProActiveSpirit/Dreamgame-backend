@@ -6,58 +6,118 @@ async function processCombinedReservationFulfillment(storeID, transactionID, cod
   let overallStatus = 0;
   let errorCode = null;
 
+  const existingTransaction = await prisma.transaction.findUnique({
+    where: {
+      transactionID,
+    },
+  });
+  
+  if (existingTransaction) {
+    return {
+      storeID,
+      transactionID,
+      status: 1,
+      errorCode: 'E4031'
+    };
+  }
+
   try {
     for (const { sku, qty } of codeAcquisition) {
-      const reservationSuccess = Math.random() > 0.3; // Simulating reservation success
-
-      if (reservationSuccess) {
+      const records = await prisma.nintendoData.findMany({
+        where: {
+          product_code_txt: {
+            has: sku,
+          },
+          eshop_removed_b: false,
+        },
+      });
+      if (records.length > 0) {
         // Fulfillment logic: Generate codes for each SKU
         let codes = [];
         for (let i = 0; i < qty; i++) {
           codes.push({
-            controlNumber: `${sku}-${Math.floor(Math.random() * 1000000)}`,
-            downloadNumber: `ABCDEFGHIJKLM${Math.floor(Math.random() * 1000)}`
+            controlNumber: generateControlNumber(),
+            downloadNumber: generateDownloadNumber()
           });
         }
-zz
+
         fulfillments.push({
           sku,
           codes,
-          status: 0
+          status: 0,
+          qty:qty
         });
       } else {
         // If reservation fails
         fulfillments.push({
           sku,
           status: 1,
-          errorCode: 'E4952'
+          qty:qty
+          // errorCode: 'E4952'
         });
         overallStatus = 1;
         errorCode = 'E4951';
       }
     }
 
-    // If all SKUs are processed successfully, no error code is needed
-    if (overallStatus === 0) {
-      return {
-        storeID,
-        transactionID,
-        status: 0,
-        fulfillments
-      };
-    } else {
-      return {
-        storeID,
-        transactionID,
-        status: overallStatus,
-        errorCode,
-        fulfillments
-      };
+    // Save the transaction and fulfillments into the database
+    if( overallStatus == 0) {
+      const transactionData = await prisma.transaction.create({
+        data: {
+          transactionID,
+          status: overallStatus,
+          store: {
+            connectOrCreate: {
+              where: { storeID },
+              create: { storeID }
+            }
+          },
+          fulfillments: {
+            create: fulfillments.map(f => ({
+              sku: f.sku,
+              status: f.status,
+              qty: f.qty,
+              codes: {
+                create: f.codes?.map(c => ({
+                  controlNumber: c.controlNumber,
+                  downloadNumber: c.downloadNumber,
+                  status:0
+                })) || []
+              },
+              // errorCode: f.errorCode || null
+            }))
+          }
+        }
+      });
     }
+
+    return {
+      storeID,
+      transactionID,
+      status: overallStatus,
+      errorCode: errorCode || null,
+      fulfillments
+    };
   } catch (error) {
     console.error('Error processing combined reservation and fulfillment:', error);
     throw error;
   }
+}
+
+function generateControlNumber(prefix = 'eskf') {
+  const randomPart = Math.floor(100000 + Math.random() * 900000); // Random 6-digit number
+  const counter = Date.now(); // Use current timestamp for simplicity
+  return `${prefix}-${randomPart}-${counter}`;
+}
+
+function generateDownloadNumber(length = 15) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let downloadNumber = '';
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * chars.length);
+    downloadNumber += chars[randomIndex];
+  }
+  return downloadNumber;
 }
 
 module.exports = { processCombinedReservationFulfillment };

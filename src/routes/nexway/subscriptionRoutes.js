@@ -7,7 +7,7 @@ const {
 } = require("@controllers/nexway/subscriptionController");
 
 router.post("/status", getSubscriptionStatusHandler);
-router.put("/cancel", cancelSubscriptionHandler);
-router.put("/renew", renewSubscriptionHandler);
+router.post("/cancel", cancelSubscriptionHandler);
+router.post("/renew", renewSubscriptionHandler);
 
 module.exports = router;

@@ -10,7 +10,7 @@ const axios = require("axios");
  * @throws Exception
  */
 async function getUserToken() {
-  const url = `${process.env.HOSTURL}/iam/tokens`;
+  const url = "https://api.staging.nexway.build/iam/tokens";
 
   const data = {
     clientSecret: process.env.client_secret,

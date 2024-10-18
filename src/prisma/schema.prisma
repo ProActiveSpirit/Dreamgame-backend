@@ -265,7 +265,7 @@ model CRMData {
 
 model NintendoData {
   id               String   @id @default(uuid()) 
-  fs_id            String?
+  fs_id            String?  @unique
   change_date      DateTime?
   url              String?
   type             String?
@@ -327,20 +327,43 @@ model NintendoData {
   version  String?
 }
 
-model Transaction {
-  id               String   @id @default(uuid()) 
-  storeID          String
-  transactionID    String
-  sku              String[]
-  status           String?
-  redeemedDateAt   DateTime?
-  revokedDateAt    DateTime?
+model Store {
+  id             Int            @id @default(autoincrement())
+  storeID        String         @unique
+  transactions   Transaction[]
 }
 
-model skuNumber {
-  id               String   @id @default(uuid()) 
-  storeID          String
-  sku              String
-  controlNumber    String
-  downloadNumber   String
+model Transaction {
+  id             Int            @id @default(autoincrement())
+  transactionID  String         @unique
+  status         Int
+  fulfillments   Fulfillment[]
+  store          Store          @relation(fields: [storeId], references: [id])
+  storeId        Int
+}
+
+model Fulfillment {
+  id             Int            @id @default(autoincrement())
+  sku            String         
+  status         Int
+  qty            Int
+  codes          Code[]
+  transaction    Transaction    @relation(fields: [transactionId], references: [id])
+  transactionId  Int
+}
+
+model Code {
+  id             Int            @id @default(autoincrement())
+  controlNumber  String
+  downloadNumber String
+  status         Int
+  fulfillment    Fulfillment    @relation(fields: [fulfillmentId], references: [id])
+  fulfillmentId  Int
+}
+
+model EpayData {
+  id             Int            @id @default(autoincrement())
+  name           String
+  price          Float
+  sku            String
 }
