@@ -1,4 +1,4 @@
-const { checkCodeStatus } = require('@services/epay/codeStatus');
+const { checkCodeStatus } = require('../../services/epay/codestatus');
 
 async function codeStatusController(req, res) {
   try {

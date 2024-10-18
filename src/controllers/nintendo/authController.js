@@ -1,7 +1,7 @@
 const {
   getUserToken,
   invalidateToken
-} = require("@services/nintendo/authentication");
+} = require("../../services//nintendo/authentication");
 
 async function getTokenHandler(req, res) {
   try {

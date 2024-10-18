@@ -1,4 +1,4 @@
-const { processCombinedReservationFulfillment } = require('@services/epay/combined-reservation-fulfillment');
+const { processCombinedReservationFulfillment } = require('../../services/epay/combined-reservation-fulfillment');
 
 async function combinedReservationFulfillmentController(req, res) {
   try {

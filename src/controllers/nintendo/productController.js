@@ -1,4 +1,4 @@
-const { getProducts } = require("@services/nintendo/product");
+const { getProducts } = require("../../services/nintendo/product");
 
 async function getProductList(req, res) {
   try {
