@@ -17,7 +17,7 @@ async function checkCodeStatus(storeID, controlNumber) {
       },
     }); 
 
-    if (!codeRecord || codeRecord.fulfillment.transaction.storeID !== storeID) {
+    if (!codeRecord ) {
       return {
         storeID,
         controlNumber,

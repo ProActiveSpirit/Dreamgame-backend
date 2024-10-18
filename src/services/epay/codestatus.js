@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 async function checkCodeStatus(storeID, controlNumber) {
   try {
     // Fetch the record using the control number and ensure the storeID matches
-    const codeRecord = await prisma.code.findUnique({
+    const codeRecord = await prisma.code.findFirst({
       where: {
         controlNumber: controlNumber,
       },
@@ -17,7 +17,7 @@ async function checkCodeStatus(storeID, controlNumber) {
       },
     }); 
 
-    if (!codeRecord || codeRecord.fulfillment.transaction.storeID !== storeID) {
+    if (!codeRecord) {
       return {
         storeID,
         controlNumber,
