@@ -3,7 +3,7 @@
 var express = require("express");
 var cors = require("cors");
 require("dotenv").config();
-var apiRoute = require("./routes/api");
+var apiRoute = require("./src/routes/api");
 var app = express();
 
 // Middleware
