@@ -22,7 +22,9 @@ async function reservation(storeID, transactionID, codeAcquisition) {
 
   try {
     for (const { sku, qty } of codeAcquisition) {
-      const record = await prisma.nintendoData.findMany({
+      console.log("sku" , sku);
+
+      const record = await prisma.nintendoData.findFirst({
         where: {
           product_code_txt: {
             has: sku,
@@ -30,11 +32,11 @@ async function reservation(storeID, transactionID, codeAcquisition) {
           eshop_removed_b: false,
         },
       });
-
+      console.log("record" , record);
       if (record.length > 0) {
-        reservations.push({ sku, status: 0 });
+        reservations.push({ sku, status: 0,qty:qty });
       } else {
-        reservations.push({ sku, status: 1, errorCode: 'E4007' });
+        reservations.push({ sku, status: 1, errorCode: 'E4007',qty:qty });
       }
 
       skus.push(sku);

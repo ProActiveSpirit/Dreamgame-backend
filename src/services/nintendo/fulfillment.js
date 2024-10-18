@@ -29,10 +29,11 @@ async function processFulfillment(storeID, transactionID) {
       return {
         ...f,
         codes,
-        status: 1
+        status: 0
       };
     }
-    return f;
+    else
+      return f;
   });
 
   try {
