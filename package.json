@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/app.js",
+    "vercel-build": "prisma generate && prisma migrate deploy",
     "dev": "nodemon src/app.js",
     "prisma:generate": "prisma generate",
     "build": "babel src -d dist",
