@@ -12,46 +12,42 @@ function revokeCode(_x, _x2) {
 }
 function _revokeCode() {
   _revokeCode = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(storeID, controlNumber) {
-    var result, response;
+    var status, revokeResult, result, response;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
           _context.prev = 0;
-          _context.next = 3;
-          return prisma.nintendoData.updateMany({
+          status = 0;
+          revokeResult = 'REVOKED';
+          _context.next = 5;
+          return prisma.code.findMany({
             where: {
-              controlNumber: controlNumber,
-              storeID: storeID
-            },
-            data: {
-              status: 'REVOKED'
+              controlNumber: controlNumber
             }
           });
-        case 3:
+        case 5:
           result = _context.sent;
-          if (!(result.count === 0)) {
-            _context.next = 6;
-            break;
+          if (result.count === 0) {
+            status = 1;
+            revokeResult = 'IRREVOCABLE';
           }
-          throw new Error('Code not found or already revoked');
-        case 6:
           response = {
             storeID: storeID,
             controlNumber: controlNumber,
-            status: 0,
-            revokeResult: 'REVOKED'
+            status: status,
+            revokeResult: revokeResult
           };
           return _context.abrupt("return", response);
-        case 10:
-          _context.prev = 10;
+        case 11:
+          _context.prev = 11;
           _context.t0 = _context["catch"](0);
           console.error('Error revoking code:', _context.t0);
           throw _context.t0;
-        case 14:
+        case 15:
         case "end":
           return _context.stop();
       }
-    }, _callee, null, [[0, 10]]);
+    }, _callee, null, [[0, 11]]);
   }));
   return _revokeCode.apply(this, arguments);
 }

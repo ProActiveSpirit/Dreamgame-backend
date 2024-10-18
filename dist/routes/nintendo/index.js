@@ -1,7 +1,6 @@
 "use strict";
 
 var express = require("express");
-var authRoutes = require("./authRoutes");
 var productRoutes = require("./productRoutes");
 var reservation = require("./reservationRoutes");
 var fulfillment = require("./fulfillmentRoutes");
@@ -10,7 +9,6 @@ var codeRevoke = require("./coderevokeRoutes");
 var healthcheck = require("./healthcheckRoutes");
 var combined = require("./combined-reservation-fulfillment-Routes");
 var router = express.Router();
-router.use("/auth", authRoutes);
 router.use(productRoutes);
 router.use(reservation);
 router.use(fulfillment);

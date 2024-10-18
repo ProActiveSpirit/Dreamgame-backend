@@ -15,85 +15,173 @@ function processCombinedReservationFulfillment(_x, _x2, _x3) {
 }
 function _processCombinedReservationFulfillment() {
   _processCombinedReservationFulfillment = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(storeID, transactionID, codeAcquisition) {
-    var fulfillments, overallStatus, errorCode, _iterator, _step, _step$value, sku, qty, reservationSuccess, codes, i;
+    var fulfillments, overallStatus, errorCode, existingTransaction, _iterator, _step, _step$value, sku, qty, records, codes, i, transactionData;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
           fulfillments = [];
           overallStatus = 0;
           errorCode = null;
-          _context.prev = 3;
-          _iterator = _createForOfIteratorHelper(codeAcquisition);
-          try {
-            for (_iterator.s(); !(_step = _iterator.n()).done;) {
-              _step$value = _step.value, sku = _step$value.sku, qty = _step$value.qty;
-              reservationSuccess = Math.random() > 0.3; // Simulating reservation success
-              if (reservationSuccess) {
-                // Fulfillment logic: Generate codes for each SKU
-                codes = [];
-                for (i = 0; i < qty; i++) {
-                  codes.push({
-                    controlNumber: "".concat(sku, "-").concat(Math.floor(Math.random() * 1000000)),
-                    downloadNumber: "ABCDEFGHIJKLM".concat(Math.floor(Math.random() * 1000))
-                  });
-                }
-                zz;
-                fulfillments.push({
-                  sku: sku,
-                  codes: codes,
-                  status: 0
-                });
-              } else {
-                // If reservation fails
-                fulfillments.push({
-                  sku: sku,
-                  status: 1,
-                  errorCode: 'E4952'
-                });
-                overallStatus = 1;
-                errorCode = 'E4951';
-              }
+          _context.next = 5;
+          return prisma.transaction.findUnique({
+            where: {
+              transactionID: transactionID
             }
-
-            // If all SKUs are processed successfully, no error code is needed
-          } catch (err) {
-            _iterator.e(err);
-          } finally {
-            _iterator.f();
-          }
-          if (!(overallStatus === 0)) {
-            _context.next = 10;
+          });
+        case 5:
+          existingTransaction = _context.sent;
+          if (!existingTransaction) {
+            _context.next = 8;
             break;
           }
           return _context.abrupt("return", {
             storeID: storeID,
             transactionID: transactionID,
-            status: 0,
-            fulfillments: fulfillments
+            status: 1,
+            errorCode: 'E4031'
           });
-        case 10:
+        case 8:
+          _context.prev = 8;
+          _iterator = _createForOfIteratorHelper(codeAcquisition);
+          _context.prev = 10;
+          _iterator.s();
+        case 12:
+          if ((_step = _iterator.n()).done) {
+            _context.next = 20;
+            break;
+          }
+          _step$value = _step.value, sku = _step$value.sku, qty = _step$value.qty;
+          _context.next = 16;
+          return prisma.nintendoData.findMany({
+            where: {
+              product_code_txt: {
+                has: sku
+              },
+              eshop_removed_b: false
+            }
+          });
+        case 16:
+          records = _context.sent;
+          if (records.length > 0) {
+            // Fulfillment logic: Generate codes for each SKU
+            codes = [];
+            for (i = 0; i < qty; i++) {
+              codes.push({
+                controlNumber: generateControlNumber(),
+                downloadNumber: generateDownloadNumber()
+              });
+            }
+            fulfillments.push({
+              sku: sku,
+              codes: codes,
+              status: 0,
+              qty: qty
+            });
+          } else {
+            // If reservation fails
+            fulfillments.push({
+              sku: sku,
+              status: 1,
+              qty: qty
+              // errorCode: 'E4952'
+            });
+            overallStatus = 1;
+            errorCode = 'E4951';
+          }
+        case 18:
+          _context.next = 12;
+          break;
+        case 20:
+          _context.next = 25;
+          break;
+        case 22:
+          _context.prev = 22;
+          _context.t0 = _context["catch"](10);
+          _iterator.e(_context.t0);
+        case 25:
+          _context.prev = 25;
+          _iterator.f();
+          return _context.finish(25);
+        case 28:
+          if (!(overallStatus == 0)) {
+            _context.next = 32;
+            break;
+          }
+          _context.next = 31;
+          return prisma.transaction.create({
+            data: {
+              transactionID: transactionID,
+              status: overallStatus,
+              store: {
+                connectOrCreate: {
+                  where: {
+                    storeID: storeID
+                  },
+                  create: {
+                    storeID: storeID
+                  }
+                }
+              },
+              fulfillments: {
+                create: fulfillments.map(function (f) {
+                  var _f$codes;
+                  return {
+                    sku: f.sku,
+                    status: f.status,
+                    qty: f.qty,
+                    codes: {
+                      create: ((_f$codes = f.codes) === null || _f$codes === void 0 ? void 0 : _f$codes.map(function (c) {
+                        return {
+                          controlNumber: c.controlNumber,
+                          downloadNumber: c.downloadNumber,
+                          status: 0
+                        };
+                      })) || []
+                    }
+                    // errorCode: f.errorCode || null
+                  };
+                })
+              }
+            }
+          });
+        case 31:
+          transactionData = _context.sent;
+        case 32:
           return _context.abrupt("return", {
             storeID: storeID,
             transactionID: transactionID,
             status: overallStatus,
-            errorCode: errorCode,
+            errorCode: errorCode || null,
             fulfillments: fulfillments
           });
-        case 11:
-          _context.next = 17;
-          break;
-        case 13:
-          _context.prev = 13;
-          _context.t0 = _context["catch"](3);
-          console.error('Error processing combined reservation and fulfillment:', _context.t0);
-          throw _context.t0;
-        case 17:
+        case 35:
+          _context.prev = 35;
+          _context.t1 = _context["catch"](8);
+          console.error('Error processing combined reservation and fulfillment:', _context.t1);
+          throw _context.t1;
+        case 39:
         case "end":
           return _context.stop();
       }
-    }, _callee, null, [[3, 13]]);
+    }, _callee, null, [[8, 35], [10, 22, 25, 28]]);
   }));
   return _processCombinedReservationFulfillment.apply(this, arguments);
+}
+function generateControlNumber() {
+  var prefix = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'eskf';
+  var randomPart = Math.floor(100000 + Math.random() * 900000); // Random 6-digit number
+  var counter = Date.now(); // Use current timestamp for simplicity
+  return "".concat(prefix, "-").concat(randomPart, "-").concat(counter);
+}
+function generateDownloadNumber() {
+  var length = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 15;
+  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var downloadNumber = '';
+  for (var i = 0; i < length; i++) {
+    var randomIndex = Math.floor(Math.random() * chars.length);
+    downloadNumber += chars[randomIndex];
+  }
+  return downloadNumber;
 }
 module.exports = {
   processCombinedReservationFulfillment: processCombinedReservationFulfillment

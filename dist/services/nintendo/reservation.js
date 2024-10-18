@@ -15,24 +15,43 @@ function reservation(_x, _x2, _x3) {
 }
 function _reservation() {
   _reservation = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(storeID, transactionID, codeAcquisition) {
-    var reservations, skus, _iterator, _step, _step$value, sku, qty, record, overallStatus, transactionss, response;
+    var reservations, skus, existingTransaction, _iterator, _step, _step$value, sku, qty, record, overallStatus, response;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
           reservations = [];
           skus = [];
-          _context.prev = 2;
+          _context.next = 4;
+          return prisma.transaction.findUnique({
+            where: {
+              transactionID: transactionID
+            }
+          });
+        case 4:
+          existingTransaction = _context.sent;
+          if (!existingTransaction) {
+            _context.next = 7;
+            break;
+          }
+          return _context.abrupt("return", {
+            storeID: storeID,
+            transactionID: transactionID,
+            status: 1,
+            errorCode: 'E4031'
+          });
+        case 7:
+          _context.prev = 7;
           _iterator = _createForOfIteratorHelper(codeAcquisition);
-          _context.prev = 4;
+          _context.prev = 9;
           _iterator.s();
-        case 6:
+        case 11:
           if ((_step = _iterator.n()).done) {
-            _context.next = 15;
+            _context.next = 20;
             break;
           }
           _step$value = _step.value, sku = _step$value.sku, qty = _step$value.qty;
-          _context.next = 10;
-          return prisma.nintendoData.findMany({
+          _context.next = 15;
+          return prisma.nintendoData.findFirst({
             where: {
               product_code_txt: {
                 has: sku
@@ -40,63 +59,76 @@ function _reservation() {
               eshop_removed_b: false
             }
           });
-        case 10:
+        case 15:
           record = _context.sent;
           if (record.length > 0) {
             reservations.push({
               sku: sku,
-              status: 0
+              status: 0,
+              qty: qty
             });
           } else {
             reservations.push({
               sku: sku,
               status: 1,
-              errorCode: 'E4007'
+              errorCode: 'E4007',
+              qty: qty
             });
           }
           skus.push(sku);
-        case 13:
-          _context.next = 6;
+        case 18:
+          _context.next = 11;
           break;
-        case 15:
-          _context.next = 20;
-          break;
-        case 17:
-          _context.prev = 17;
-          _context.t0 = _context["catch"](4);
-          _iterator.e(_context.t0);
         case 20:
-          _context.prev = 20;
+          _context.next = 25;
+          break;
+        case 22:
+          _context.prev = 22;
+          _context.t0 = _context["catch"](9);
+          _iterator.e(_context.t0);
+        case 25:
+          _context.prev = 25;
           _iterator.f();
-          return _context.finish(20);
-        case 23:
+          return _context.finish(25);
+        case 28:
           if (!reservations.every(function (r) {
             return r.status === 0;
           })) {
-            _context.next = 33;
+            _context.next = 34;
             break;
           }
           overallStatus = 0; // Successful completion
-          _context.next = 27;
+          _context.next = 32;
           return prisma.transaction.create({
             data: {
-              storeID: storeID,
               transactionID: transactionID,
-              sku: skus
-              // status: 'REDEEMABLE',  // Example status
-              // redeemedDateAt: null,  // Example redeemed date
-              // revokedDateAt: null,  // Example revoked date (null if not revoked)
+              status: overallStatus,
+              store: {
+                connectOrCreate: {
+                  where: {
+                    storeID: storeID
+                  },
+                  create: {
+                    storeID: storeID
+                  }
+                }
+              },
+              fulfillments: {
+                create: reservations.map(function (r) {
+                  return {
+                    sku: r.sku,
+                    qty: r.qty,
+                    status: r.status
+                    // errorCode: r.errorCode || null
+                  };
+                })
+              }
             }
           });
-        case 27:
-          _context.next = 29;
-          return prisma.transaction.findMany({});
-        case 29:
-          transactionss = _context.sent;
-          console.log("transactionss", transactionss);
-          _context.next = 34;
+        case 32:
+          _context.next = 35;
           break;
-        case 33:
+        case 34:
           if (reservations.every(function (r) {
             return r.status === 1;
           })) {
@@ -104,7 +136,7 @@ function _reservation() {
           } else {
             overallStatus = 2; // Partially successful completion
           }
-        case 34:
+        case 35:
           response = {
             storeID: storeID,
             transactionID: transactionID,
@@ -115,16 +147,16 @@ function _reservation() {
             response.errorCode = 'E4951'; // Set an appropriate error code based on the scenario
           }
           return _context.abrupt("return", response);
-        case 39:
-          _context.prev = 39;
-          _context.t1 = _context["catch"](2);
+        case 40:
+          _context.prev = 40;
+          _context.t1 = _context["catch"](7);
           console.error('Error processing reservation:', _context.t1);
           throw _context.t1;
-        case 43:
+        case 44:
         case "end":
           return _context.stop();
       }
-    }, _callee, null, [[2, 39], [4, 17, 20, 23]]);
+    }, _callee, null, [[7, 40], [9, 22, 25, 28]]);
   }));
   return _reservation.apply(this, arguments);
 }

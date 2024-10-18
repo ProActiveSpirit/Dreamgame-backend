@@ -6,6 +6,8 @@ function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 var _require = require("./apiUtils"),
   getCurlResponse = _require.getCurlResponse;
+var _require2 = require("./authentication"),
+  getUserToken = _require2.getUserToken;
 
 /**
  * Get cross sell and up sell products

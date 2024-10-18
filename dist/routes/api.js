@@ -1,9 +1,9 @@
 "use strict";
 
 var express = require("express");
-var nexwayRoutes = require("@routes/nexway/");
-var nintendoRoutes = require("@routes/nintendo");
-var epayRoutes = require("@routes/epay");
+var nexwayRoutes = require("../routes/nexway");
+var nintendoRoutes = require("../routes/nintendo");
+var epayRoutes = require("../routes/epay");
 var router = express.Router();
 
 // Use the combined routes from the index.js file
