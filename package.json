@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node src/app.js",
+    "start": "node app.js",
     "vercel-build": "prisma generate",
-    "dev": "nodemon src/app.js",
+    "dev": "nodemon app.js",
     "prisma:generate": "prisma generate",
-    "build": "babel src -d dist",
+    "build": "babel . -d dist",
     "postinstall": "prisma generate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
