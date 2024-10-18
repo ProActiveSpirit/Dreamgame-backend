@@ -41,14 +41,15 @@ async function processCombinedReservationFulfillment(storeID, transactionID, cod
         fulfillments.push({
           sku,
           codes,
-          status: 0
+          status: 0,
+          qty:qty
         });
       } else {
         // If reservation fails
         fulfillments.push({
           sku,
           status: 1,
-          errorCode: 'E4952'
+          qty:qty
         });
         overallStatus = 1;
         errorCode = 'E4951';
@@ -71,10 +72,12 @@ async function processCombinedReservationFulfillment(storeID, transactionID, cod
             create: fulfillments.map(f => ({
               sku: f.sku,
               status: f.status,
+              qty: f.qty,
               codes: {
                 create: f.codes?.map(c => ({
                   controlNumber: c.controlNumber,
-                  downloadNumber: c.downloadNumber
+                  downloadNumber: c.downloadNumber,
+                  status:0
                 })) || []
               },
               // errorCode: f.errorCode || null

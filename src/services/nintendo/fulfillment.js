@@ -2,8 +2,6 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function processFulfillment(storeID, transactionID) {
-  let overallStatus = 0;
-  let errorCode = null;
 
   const transaction = await prisma.transaction.findUnique({
     where: { transactionID },

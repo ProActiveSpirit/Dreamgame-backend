@@ -32,7 +32,7 @@ async function reservation(storeID, transactionID, codeAcquisition) {
           eshop_removed_b: false,
         },
       });
-      console.log("record" , record);
+
       if (record.length > 0) {
         reservations.push({ sku, status: 0,qty:qty });
       } else {

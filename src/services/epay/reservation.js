@@ -29,9 +29,9 @@ async function reservation(storeID, transactionID, codeAcquisition) {
       });
 
       if (record.length > 0) {
-        reservations.push({ sku, status: 0 });
+        reservations.push({ sku, status: 0,qty:qty  });
       } else {
-        reservations.push({ sku, status: 1, errorCode: 'E4007' });
+        reservations.push({ sku, status: 1, errorCode: 'E4007',qty:qty  });
       }
 
       skus.push(sku);

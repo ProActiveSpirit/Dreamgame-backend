@@ -22,7 +22,7 @@ async function checkCodeStatus(storeID, controlNumber) {
         storeID,
         controlNumber,
         status: 1, // Error status
-        errorCode: 'E404', // Example error code for "not found"
+        errorCode: 'E4951', // Example error code for "not found"
         message: 'The control number does not exist or does not belong to the specified store ID.',
       };
     }
@@ -62,7 +62,7 @@ async function checkCodeStatus(storeID, controlNumber) {
       storeID,
       controlNumber,
       status: 1, // Error status
-      errorCode: 'E500', // Example error code for server error
+      errorCode: 'E4952', // Example error code for server error
       message: 'An error occurred while checking the code status.',
     };
   }

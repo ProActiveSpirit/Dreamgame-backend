@@ -2,8 +2,6 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function processFulfillment(storeID, transactionID) {
-  let overallStatus = 0;
-  let errorCode = null;
 
   const transaction = await prisma.transaction.findUnique({
     where: { transactionID },
@@ -32,7 +30,8 @@ async function processFulfillment(storeID, transactionID) {
         status: 1
       };
     }
-    return f;
+    else
+      return f;
   });
 
   try {
@@ -45,6 +44,7 @@ async function processFulfillment(storeID, transactionID) {
               create: fulfillment.codes.map(c => ({
                 controlNumber: c.controlNumber,
                 downloadNumber: c.downloadNumber,
+                status:0
               })),
             },
             status: fulfillment.status,
