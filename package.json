@@ -2,13 +2,12 @@
   "name": "CRMDreamGame",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "node app.js",
     "vercel-build": "prisma generate",
     "dev": "nodemon app.js",
     "prisma:generate": "prisma generate",
-    "build": "babel . -d dist",
     "postinstall": "prisma generate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,13 +21,13 @@
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
     "express-routes-versioning": "^1.0.1",
-    "nintendo-switch-eshop": "^8.0.0"
+    "nintendo-switch-eshop": "^8.0.0",
+    "prisma": "^5.20.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.25.7",
     "@babel/core": "^7.25.7",
     "@babel/preset-env": "^7.25.7",
-    "nodemon": "^3.1.7",
-    "prisma": "^5.20.0"
+    "nodemon": "^3.1.7"
   }
 }
