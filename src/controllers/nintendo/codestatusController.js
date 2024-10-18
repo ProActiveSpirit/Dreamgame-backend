@@ -1,4 +1,4 @@
-const { checkCodeStatus } = require('@services/nintendo/codeStatus');
+const { checkCodeStatus } = require('../../services/nintendo/codestatus');
 
 async function codeStatusController(req, res) {
   try {

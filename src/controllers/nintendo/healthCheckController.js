@@ -1,4 +1,4 @@
-const { checkHealth } = require('@services/nintendo/healthCheck');
+const { checkHealth } = require('../../services/nintendo/healthCheck');
 
 async function healthCheckController(req, res) {
   try {

@@ -1,4 +1,4 @@
-const { revokeCode } = require('@services/epay/codeRevoke');
+const { revokeCode } = require('../../services/epay/coderevoke');
 
 async function codeRevokeController(req, res) {
   try {
