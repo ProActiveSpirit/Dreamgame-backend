@@ -1,4 +1,5 @@
 const { getCurlResponse } = require("./apiUtils");
+const { getUserToken } = require("./authentication");
 
 /**
  * Get cross sell and up sell products

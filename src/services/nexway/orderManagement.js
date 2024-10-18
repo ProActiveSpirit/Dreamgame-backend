@@ -116,6 +116,7 @@ async function cancelOrder(hostURL, orderId, secret) {
 }
 
 module.exports = {
+  getOrder,
   createOrder,
   getOrderDownloadInfo,
   updateDownloadTime,

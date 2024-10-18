@@ -22,7 +22,6 @@ async function reservation(storeID, transactionID, codeAcquisition) {
 
   try {
     for (const { sku, qty } of codeAcquisition) {
-      console.log("sku" , sku);
 
       const record = await prisma.nintendoData.findFirst({
         where: {
