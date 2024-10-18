@@ -8,6 +8,7 @@
     "dev": "nodemon src/app.js",
     "prisma:generate": "prisma generate",
     "build": "npm run prisma:generate && babel src -d dist",
+    "postinstall": "prisma generate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
