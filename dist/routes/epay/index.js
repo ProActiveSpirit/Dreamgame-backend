@@ -2,6 +2,18 @@
 
 var express = require("express");
 var productRoutes = require("./productRoutes");
+var reservation = require("./reservationRoutes");
+var fulfillment = require("./fulfillmentRoutes");
+var codeStatus = require("./codestatusRoutes");
+var codeRevoke = require("./coderevokeRoutes");
+var healthcheck = require("./healthcheckRoutes");
+var combined = require("./combined-reservation-fulfillment-Routes");
 var router = express.Router();
 router.use(productRoutes);
+router.use(reservation);
+router.use(fulfillment);
+router.use(codeStatus);
+router.use(codeRevoke);
+router.use(healthcheck);
+router.use(combined);
 module.exports = router;

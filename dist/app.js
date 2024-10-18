@@ -3,8 +3,7 @@
 var express = require("express");
 var cors = require("cors");
 require("dotenv").config();
-require('module-alias/register');
-var apiRoute = require("@routes/api");
+var apiRoute = require("./routes/api");
 var app = express();
 
 // Middleware

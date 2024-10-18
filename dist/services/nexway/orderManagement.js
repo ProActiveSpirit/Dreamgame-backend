@@ -209,6 +209,7 @@ function _cancelOrder() {
   return _cancelOrder.apply(this, arguments);
 }
 module.exports = {
+  getOrder: getOrder,
   createOrder: createOrder,
   getOrderDownloadInfo: getOrderDownloadInfo,
   updateDownloadTime: updateDownloadTime,

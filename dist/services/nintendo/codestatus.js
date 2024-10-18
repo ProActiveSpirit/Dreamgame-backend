@@ -12,47 +12,82 @@ function checkCodeStatus(_x, _x2) {
 }
 function _checkCodeStatus() {
   _checkCodeStatus = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(storeID, controlNumber) {
-    var record, transaction, transactionID, codeStatus, redeemedDateAt, revokedDateAt, response;
+    var codeRecord, transaction, transactionID, codeStatus, redeemedDateAt, revokedDateAt, response;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
           _context.prev = 0;
-          record = prisma.skuNumber.findMany({
+          _context.next = 3;
+          return prisma.code.findUnique({
             where: {
-              controlNumber: controlNumbers
-            }
-          });
-          transaction = prisma.transaction.findMany({
-            where: {
-              sku: {
-                has: record.sku
+              controlNumber: controlNumber
+            },
+            include: {
+              fulfillment: {
+                include: {
+                  transaction: true
+                }
               }
             }
           });
-          transactionID = transaction.transactionID;
-          codeStatus = transaction.status;
-          redeemedDateAt = "20202001T090000Z";
-          revokedDateAt = "20202005T180000Z";
+        case 3:
+          codeRecord = _context.sent;
+          if (codeRecord) {
+            _context.next = 6;
+            break;
+          }
+          return _context.abrupt("return", {
+            storeID: storeID,
+            controlNumber: controlNumber,
+            status: 1,
+            // Error status
+            errorCode: 'E4951',
+            // Example error code for "not found"
+            message: 'The control number does not exist or does not belong to the specified store ID.'
+          });
+        case 6:
+          transaction = codeRecord.fulfillment.transaction;
+          transactionID = transaction.transactionID; // Determine code status based on your business logic or database fields
+          if (transaction.status === 'REDEEMED') {
+            codeStatus = 'REDEEMED';
+          } else if (transaction.status === 'REVOKED') {
+            codeStatus = 'REVOKED';
+          } else if (transaction.status === 'INACTIVE') {
+            codeStatus = 'INACTIVE';
+          } else {
+            codeStatus = 'REDEEMABLE';
+          }
+          redeemedDateAt = transaction.redeemedAt ? transaction.redeemedAt.toISOString() : null;
+          revokedDateAt = transaction.revokedAt ? transaction.revokedAt.toISOString() : null;
           response = {
             storeID: storeID,
             controlNumber: controlNumber,
             status: 0,
+            // Success status
             codeStatus: codeStatus,
             transactionID: transactionID,
             redeemedDateAt: redeemedDateAt,
             revokedDateAt: revokedDateAt
           };
           return _context.abrupt("return", response);
-        case 11:
-          _context.prev = 11;
+        case 15:
+          _context.prev = 15;
           _context.t0 = _context["catch"](0);
           console.error('Error checking code status:', _context.t0);
-          throw _context.t0;
-        case 15:
+          return _context.abrupt("return", {
+            storeID: storeID,
+            controlNumber: controlNumber,
+            status: 1,
+            // Error status
+            errorCode: 'E4952',
+            // Example error code for server error
+            message: 'An error occurred while checking the code status.'
+          });
+        case 19:
         case "end":
           return _context.stop();
       }
-    }, _callee, null, [[0, 11]]);
+    }, _callee, null, [[0, 15]]);
   }));
   return _checkCodeStatus.apply(this, arguments);
 }

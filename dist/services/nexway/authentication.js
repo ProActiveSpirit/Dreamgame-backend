@@ -28,7 +28,7 @@ function _getUserToken() {
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
-          url = "".concat(process.env.HOSTURL, "/iam/tokens");
+          url = "https://api.staging.nexway.build/iam/tokens";
           data = {
             clientSecret: process.env.client_secret,
             realmName: process.env.REALM_NAME,

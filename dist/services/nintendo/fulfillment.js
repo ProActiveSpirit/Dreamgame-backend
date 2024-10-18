@@ -5,6 +5,11 @@ function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyri
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 var _require = require('@prisma/client'),
@@ -15,96 +20,116 @@ function processFulfillment(_x, _x2) {
 }
 function _processFulfillment() {
   _processFulfillment = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee(storeID, transactionID) {
-    var fulfillments, record, skus, _iterator, _step, sku, controlNumber, downloadNumber, codes, skuStatus, errorCode, overallStatus, response;
+    var transaction, fulfillments, _iterator, _step, fulfillment;
     return _regeneratorRuntime().wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
-          fulfillments = [];
-          _context.prev = 1;
-          _context.next = 4;
-          return prisma.transaction.findFirst({
+          _context.next = 2;
+          return prisma.transaction.findUnique({
             where: {
               transactionID: transactionID
+            },
+            include: {
+              fulfillments: true
             }
           });
-        case 4:
-          record = _context.sent;
-          console.log("fulfillment record", record);
-          skus = record.sku; // Example SKUs
-          _iterator = _createForOfIteratorHelper(skus);
-          try {
-            for (_iterator.s(); !(_step = _iterator.n()).done;) {
-              sku = _step.value;
-              controlNumber = generateControlNumber();
-              downloadNumber = generateDownloadNumber();
-              codes = [{
-                controlNumber: controlNumber,
-                downloadNumber: downloadNumber,
-                status: 0
-              }
-              // {
-              //   status: Math.random() > 0.5 ? 0 : 1,
-              //   errorCode: 'E2345',
-              // }
-              ];
-              prisma.skuNumber.create({
-                storeID: storeID,
-                sku: sku,
-                controlNumber: controlNumber,
-                downloadNumber: downloadNumber
-              });
-              skuStatus = codes.every(function (code) {
-                return code.status === 0;
-              }) ? 0 : 2;
-              errorCode = void 0;
-              if (skuStatus !== 0) {
-                errorCode = 'E4951'; // Set SKU level error code if needed
-              }
-              fulfillments.push({
-                sku: sku,
-                codes: codes.filter(function (code) {
-                  return code.status === 0 || code.errorCode;
-                }),
-                // Include only valid code entries
-                status: skuStatus,
-                errorCode: errorCode
-              });
-            }
-          } catch (err) {
-            _iterator.e(err);
-          } finally {
-            _iterator.f();
+        case 2:
+          transaction = _context.sent;
+          if (transaction) {
+            _context.next = 5;
+            break;
           }
-          overallStatus = fulfillments.every(function (f) {
-            return f.status === 0;
-          }) ? 0 : 2;
-          response = {
+          throw new Error("Transaction with ID ".concat(transactionID, " not found."));
+        case 5:
+          fulfillments = transaction.fulfillments.map(function (f) {
+            if (f.status === 0) {
+              // Generate codes for the fulfillment
+              var controlNumber = generateControlNumber();
+              var downloadNumber = generateDownloadNumber();
+              var status = controlNumber != null && downloadNumber != null;
+              var codes = Array.from({
+                length: f.qty
+              }, function () {
+                return {
+                  controlNumber: controlNumber,
+                  downloadNumber: downloadNumber,
+                  status: 0
+                };
+              });
+              return _objectSpread(_objectSpread({}, f), {}, {
+                codes: codes,
+                status: 0
+              });
+            } else return f;
+          });
+          _context.prev = 6;
+          _iterator = _createForOfIteratorHelper(fulfillments);
+          _context.prev = 8;
+          _iterator.s();
+        case 10:
+          if ((_step = _iterator.n()).done) {
+            _context.next = 17;
+            break;
+          }
+          fulfillment = _step.value;
+          if (!fulfillment.codes) {
+            _context.next = 15;
+            break;
+          }
+          _context.next = 15;
+          return prisma.fulfillment.update({
+            where: {
+              id: fulfillment.id
+            },
+            data: {
+              codes: {
+                create: fulfillment.codes.map(function (c) {
+                  return {
+                    controlNumber: c.controlNumber,
+                    downloadNumber: c.downloadNumber,
+                    status: 0
+                  };
+                })
+              },
+              status: fulfillment.status
+            }
+          });
+        case 15:
+          _context.next = 10;
+          break;
+        case 17:
+          _context.next = 22;
+          break;
+        case 19:
+          _context.prev = 19;
+          _context.t0 = _context["catch"](8);
+          _iterator.e(_context.t0);
+        case 22:
+          _context.prev = 22;
+          _iterator.f();
+          return _context.finish(22);
+        case 25:
+          return _context.abrupt("return", {
             storeID: storeID,
             transactionID: transactionID,
-            status: overallStatus,
-            fulfillments: fulfillments.filter(function (f) {
-              return f.codes.status !== 0;
-            }) // Include only non-zero status fulfillments
-          };
-          if (overallStatus !== 0) {
-            response.errorCode = 'E4951'; // Set overall error code if not all are successful
-          }
-          return _context.abrupt("return", response);
-        case 15:
-          _context.prev = 15;
-          _context.t0 = _context["catch"](1);
-          console.error('Error processing fulfillment:', _context.t0);
-          throw _context.t0;
-        case 19:
+            status: 0,
+            fulfillments: fulfillments
+          });
+        case 28:
+          _context.prev = 28;
+          _context.t1 = _context["catch"](6);
+          console.error('Error processing combined reservation and fulfillment:', _context.t1);
+          throw _context.t1;
+        case 32:
         case "end":
           return _context.stop();
       }
-    }, _callee, null, [[1, 15]]);
+    }, _callee, null, [[6, 28], [8, 19, 22, 25]]);
   }));
   return _processFulfillment.apply(this, arguments);
 }
 function generateControlNumber() {
-  var prefix = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'ABCD';
+  var prefix = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'eskf';
   var randomPart = Math.floor(100000 + Math.random() * 900000); // Random 6-digit number
   var counter = Date.now(); // Use current timestamp for simplicity
   return "".concat(prefix, "-").concat(randomPart, "-").concat(counter);
