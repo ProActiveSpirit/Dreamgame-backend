@@ -83,7 +83,7 @@ async function getProducts() {
           version: game._version_,
         };
 
-        console.log("gameData.fs_id" , gameData.fs_id);
+        console.log("sku" , gameData.product_code_txt);
         //Save the game data to the database
         await prisma.nintendoData.create({
           data: {

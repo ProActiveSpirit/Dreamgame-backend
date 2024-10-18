@@ -356,7 +356,7 @@ model Code {
   id             Int            @id @default(autoincrement())
   controlNumber  String
   downloadNumber String
-  status         String
+  status         Int
   fulfillment    Fulfillment    @relation(fields: [fulfillmentId], references: [id])
   fulfillmentId  Int
 }

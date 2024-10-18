@@ -45,6 +45,7 @@ async function processFulfillment(storeID, transactionID) {
               create: fulfillment.codes.map(c => ({
                 controlNumber: c.controlNumber,
                 downloadNumber: c.downloadNumber,
+                status:0
               })),
             },
             status: fulfillment.status,
