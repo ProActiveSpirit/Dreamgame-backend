@@ -1,4 +1,4 @@
-const { getCrossUpSell } = require("@services/nexway/crossSellManagement");
+const { getCrossUpSell } = require("../../services/nexway/crossSellManagement");
 
 async function getCrossUpSellHandler(req, res) {
   try {
