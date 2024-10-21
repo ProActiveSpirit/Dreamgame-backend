@@ -5,11 +5,11 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "vercel-build": "babel ./ --out-dir dist && prisma generate",
+    "build": "babel src --out-dir dist --copy-files",
+    "vercel-build": "prisma generate && npm run build",
     "dev": "nodemon app.js",
     "prisma:generate": "prisma generate",
     "postinstall": "prisma generate",
-    "build": "babel ./ --out-dir dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
