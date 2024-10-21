@@ -1,4 +1,4 @@
-const { processFulfillment } = require('../../services/epay/fulfillment');
+const { processFulfillment } = require('@services/epay/fulfillment');
 
 async function fulfillmentController(req, res) {
   try {
