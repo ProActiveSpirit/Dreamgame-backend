@@ -3,7 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 require("module-alias/register");
 
-const apiRoute = require("@routes/api");
+const apiRoute = require("./routes/api");
 
 const app = express();
 
