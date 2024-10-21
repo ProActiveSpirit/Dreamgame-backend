@@ -1,11 +1,11 @@
 const express = require("express");
-const productRoutes = require("@routes/epay/productRoutes");
-const reservation = require("@routes/epay/reservationRoutes");
-const fulfillment = require("@routes/epay/fulfillmentRoutes");
-const codeStatus = require("@routes/epay/codestatusRoutes");
-const codeRevoke = require("@routes/epay/coderevokeRoutes");
-const healthcheck = require("@routes/epay/healthcheckRoutes");
-const combined = require("@routes/epay/combined-reservation-fulfillment-Routes");
+const productRoutes = require("./productRoutes");
+const reservation = require("./reservationRoutes");
+const fulfillment = require("./fulfillmentRoutes");
+const codeStatus = require("./codestatusRoutes");
+const codeRevoke = require("./coderevokeRoutes");
+const healthcheck = require("./healthcheckRoutes");
+const combined = require("./combined-reservation-fulfillment-Routes");
 const router = express.Router();
 
 router.use(productRoutes);

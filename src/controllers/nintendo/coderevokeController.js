@@ -1,4 +1,4 @@
-const { revokeCode } = require('@services/nintendo/coderevoke');
+const { revokeCode } = require('../../services/nintendo/coderevoke');
 
 async function codeRevokeController(req, res) {
   try {
