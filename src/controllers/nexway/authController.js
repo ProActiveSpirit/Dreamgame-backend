@@ -1,7 +1,7 @@
 const {
   getUserToken,
   invalidateToken
-} = require("../../services/nexway/authentication");
+} = require("@services/nexway/authentication");
 
 async function getTokenHandler(req, res) {
   try {
