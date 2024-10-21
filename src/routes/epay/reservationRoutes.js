@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { reservationController } = require('../../controllers/epay/reservationController');
+const { reservationController } = require('@controllers/epay/reservationController');
 
 router.post('/reservation', reservationController);
 
