@@ -325,6 +325,7 @@ model NintendoData {
   wishlist_email_banner460w_image_url_s String?
   downloads_rank_i Int?
   version  String?
+  region String
 }
 
 model Store {
