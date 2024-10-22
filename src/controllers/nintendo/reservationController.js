@@ -1,4 +1,4 @@
-const { reservation } = require('../../services/nintendo/reservation');
+const { reservation } = require('@services/nintendo/reservation');
 
 async function reservationController(req, res) {
   try {

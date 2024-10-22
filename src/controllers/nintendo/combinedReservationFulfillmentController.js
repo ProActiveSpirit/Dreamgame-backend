@@ -1,4 +1,4 @@
-const { processCombinedReservationFulfillment } = require('../../services/nintendo/combined-reservation-fulfillment');
+const { processCombinedReservationFulfillment } = require('@services/nintendo/combined-reservation-fulfillment');
 
 async function combinedReservationFulfillmentController(req, res) {
   try {
