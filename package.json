@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node src/app.js",
+    "start": "node dist/app.js",
     "vercel-start": "node dist/app.js",
     "build": "babel src --out-dir dist --copy-files",
     "vercel-build": "prisma generate && npm run build",
