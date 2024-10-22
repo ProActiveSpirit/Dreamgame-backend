@@ -84,7 +84,8 @@ async function getProducts() {
         await prisma.nintendoData.create({
           data: {
             ...gameData,
-            version: String(gameData.version)
+            version: String(gameData.version),
+            region: countryCode
           }
         });
       }

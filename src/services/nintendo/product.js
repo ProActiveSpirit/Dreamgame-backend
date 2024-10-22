@@ -4,7 +4,8 @@ const prisma = new PrismaClient();
 
 async function getProducts() {
   let allResults = [];
-  const result = await prisma.nintendoData.findMany({});
+  let result = [];
+  result = await prisma.nintendoData.findMany({});
 
   try{
     allResults = result.map((game) => {
