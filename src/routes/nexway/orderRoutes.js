@@ -4,7 +4,7 @@ const {
   getOrderHandler,
   getOrderDownloadInfoHandler,
   updateDownloadTimeHandler
-} = require("../../controllers/nexway/orderController");
+} = require("@controllers/nexway/orderController");
 
 router.get("/:orderId", getOrderHandler);
 router.get("/:orderId/download", getOrderDownloadInfoHandler);

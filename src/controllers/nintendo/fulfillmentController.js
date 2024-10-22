@@ -1,4 +1,4 @@
-const { processFulfillment } = require('../../services/nintendo/fulfillment');
+const { processFulfillment } = require('@services/nintendo/fulfillment');
 
 async function fulfillmentController(req, res) {
   try {
