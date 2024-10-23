@@ -265,7 +265,7 @@ model CRMData {
 
 model NintendoData {
   id               String   @id @default(uuid()) 
-  fs_id            String?  @unique
+  fs_id            String?
   change_date      DateTime?
   url              String?
   type             String?
