@@ -25,27 +25,36 @@ async function getProducts() {
     }
 
     // Map the data to create the desired output
-    for (let index = 0; index < names.length; index++) {
-      await prisma.epayData.create({
-        data: {
-          name: names[index].trim(),
-          price: parseFloat(prices[index].trim()),
-          sku: skus[index].trim(),
-        }
-      });
-      return {
-        name: names[index].trim(),
-        stock: "Stock",
-        price: parseFloat(prices[index].trim()),
-        provider: "Epay",
-        region: "en",
-        sku: skus[index].trim(),
-        publisher: "Epay",
-        status: "Active",
-        createdAt: "   "
-      };
-    };
-    return products;
+    const transformedData = names.map((name, index) => ({
+      name: name.trim(),
+      stock: "Stock",
+      price: parseFloat(prices[index].trim()),
+      provider: "Epay",
+      region: "en",
+      sku: skus[index].trim(),
+      publisher: "Epay",
+      status: "Active",
+      createdAt: "   "
+    }));
+
+    // Perform the database operations
+    async function saveDataToDatabase() {
+      await Promise.all(transformedData.map(async (data) => {
+        await prisma.epayData.create({
+          data: {
+            name: data.name,
+            price: data.price,
+            sku: data.sku,
+          }
+        });
+      }));
+    }
+
+    // Call the function to execute it
+    saveDataToDatabase().catch(console.error);
+
+    
+    return transformedData;
   } catch (error) {
     throw new Error(`Failed to get products: ${error.message}`);
   }

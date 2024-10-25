@@ -14,7 +14,7 @@ async function getProducts() {
           stock: "Stock",
           price: game.price_regular_f,
           provider: "Nintendo",
-          region: countryCode,
+          region: game.region,
           sku: game.product_code_txt[0],
           publisher: game.publisher,
           status: "Active",
