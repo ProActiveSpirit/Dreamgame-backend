@@ -1,8 +1,8 @@
 const express = require("express");
 
-const nexwayRoutes = require("@routes/nexway");
-const nintendoRoutes = require("@routes/nintendo");
-const epayRoutes = require("@routes/epay");
+const nexwayRoutes = require("./nexway");
+const nintendoRoutes = require("./nintendo");
+const epayRoutes = require("./epay");
 
 const router = express.Router();
 

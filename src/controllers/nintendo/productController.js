@@ -1,5 +1,5 @@
-const { getProducts } = require("@services/nintendo/product");
-const { productSync } = require("@services/nintendo/productsync");
+const { getProducts } = require("../../services/nintendo/product");
+const { productSync } = require("../../services/nintendo/productsync");
 
 
 async function getProductList(req, res) {

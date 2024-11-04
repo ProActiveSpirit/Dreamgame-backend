@@ -1,4 +1,4 @@
-const { getProducts } = require("@services/epay/product");
+const { getProducts } = require("../../services/epay/product");
 
 async function getProductList(req, res) {
   try {

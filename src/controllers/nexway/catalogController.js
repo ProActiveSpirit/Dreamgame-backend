@@ -1,7 +1,7 @@
 const {
   getProductFeed,
   getOperatingSystems
-} = require("@services/nexway/catalogManagement");
+} = require("../../services/nexway/catalogManagement");
 
 const hostURL = "https://api.nexway.store";
 const feedUrl = "http://webservices.nexway.com";
