@@ -1,4 +1,4 @@
-const { reservation } = require('@services/epay/reservation');
+const { reservation } = require('../../services/epay/reservation');
 
 async function reservationController(req, res) {
   try {

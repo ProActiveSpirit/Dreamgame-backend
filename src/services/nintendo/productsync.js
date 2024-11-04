@@ -5,12 +5,12 @@ const prisma = new PrismaClient();
 
 // Define the locales you want to fetch data for
 const europeanCountryCodes = ['en', 'de', 'fr', 'es', 'it', 'nl', 'pt', 'ru']; // Add more as needed
+let cnt = 0 ; 
 
-async function getProducts() {
-
-    for (const countryCode of europeanCountryCodes) {
+async function productSync() {
+  for (const countryCode of europeanCountryCodes) {
     const options = {
-      limit: 10, // Adjust the limit if needed
+      limit: 20, // Adjust the limit if needed
       locale: countryCode.toLowerCase(), // Use the lowercase country code
     };
 
@@ -18,6 +18,9 @@ async function getProducts() {
       const result = await getGamesEurope(options);
 
       for (const game of result) {
+        cnt ++;
+        console.log("game.product_code_txt", game.product_code_txt[0] , cnt);
+
         const gameData = {
           fs_id: game.fs_id,
           change_date: new Date(game.change_date),
@@ -78,18 +81,26 @@ async function getProducts() {
           physical_version_b: game.physical_version_b,
           wishlist_email_banner460w_image_url_s: game.wishlist_email_banner460w_image_url_s,
           downloads_rank_i: game.downloads_rank_i,
-          version: game._version_,
+          // version: game._version_,
         };
 
-        await prisma.nintendoData.create({
-          data: {
+        await prisma.nintendoData.upsert({
+          where: { 
+              fs_id: game.fs_id,
+              region: countryCode,
+           },
+          update: {
             ...gameData,
-            version: String(gameData.version),
+            // version: String(gameData.version),
+            region: countryCode
+          },
+          create: {
+            ...gameData,
+            // version: String(gameData.version),
             region: countryCode
           }
         });
       }
-
     } catch (error) {
       console.error(
         `Failed to fetch data for country code ${countryCode}: ${error.message}`
@@ -100,4 +111,4 @@ async function getProducts() {
   return "ok";
 }
 
-module.exports = { getProducts };
+module.exports = { productSync };
