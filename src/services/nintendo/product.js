@@ -27,7 +27,7 @@ async function getProducts() {
     );
   }
 
-  return allResults;
+  return result;
 }
 
 module.exports = { getProducts };

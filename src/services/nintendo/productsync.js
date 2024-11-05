@@ -108,7 +108,7 @@ async function productSync() {
     }
   }
 
-  return "ok";
+  return result;
 }
 
 module.exports = { productSync };
