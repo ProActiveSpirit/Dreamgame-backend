@@ -10,16 +10,16 @@ let cnt = 0 ;
 async function productSync() {
   for (const countryCode of europeanCountryCodes) {
     const options = {
-      limit: 20, // Adjust the limit if needed
-      locale: countryCode.toLowerCase(), // Use the lowercase country code
+      limit: 20,
+      locale: countryCode.toLowerCase(),
     };
 
     try {
       const result = await getGamesEurope(options);
 
       for (const game of result) {
-        cnt ++;
-        console.log("game.product_code_txt", game.product_code_txt[0] , cnt);
+        cnt++;
+        console.log("game.product_code_txt", game.product_code_txt[0], game.fs_id, cnt, countryCode);
 
         const gameData = {
           fs_id: game.fs_id,
@@ -81,34 +81,34 @@ async function productSync() {
           physical_version_b: game.physical_version_b,
           wishlist_email_banner460w_image_url_s: game.wishlist_email_banner460w_image_url_s,
           downloads_rank_i: game.downloads_rank_i,
-          // version: game._version_,
+          version: game._version_ ? game._version_ : "",
         };
 
         await prisma.nintendoData.upsert({
           where: { 
-              fs_id: game.fs_id,
-              region: countryCode,
+              fs_id_region: {
+                  fs_id: game.fs_id,
+                  region: countryCode,
+              }
            },
           update: {
             ...gameData,
-            // version: String(gameData.version),
+            version: String(gameData.version),
             region: countryCode
           },
           create: {
             ...gameData,
-            // version: String(gameData.version),
+            version: String(gameData.version),
             region: countryCode
           }
         });
       }
     } catch (error) {
-      console.error(
-        `Failed to fetch data for country code ${countryCode}: ${error.message}`
-      );
+      console.error(`Failed to fetch data for country code ${countryCode}: ${error.message}`);
     }
   }
 
-  return result;
+  return "ok";
 }
 
 module.exports = { productSync };

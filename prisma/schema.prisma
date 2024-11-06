@@ -326,6 +326,7 @@ model NintendoData {
   downloads_rank_i Int?
   version  String?
   region String
+  @@unique([fs_id, region])
 }
 
 model Store {
