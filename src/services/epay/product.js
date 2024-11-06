@@ -19,10 +19,10 @@ async function getProducts() {
     const prices = priceData.split("\n").filter(Boolean);
     const skus = skuData.split("\n").filter(Boolean);
 
-    // Check if all arrays have the same length
-    if (names.length !== prices.length || names.length !== skus.length) {
-      throw new Error("Data files are not aligned: length mismatch.");
-    }
+    // // Check if all arrays have the same length
+    // if (names.length !== prices.length || names.length !== skus.length) {
+    //   throw new Error("Data files are not aligned: length mismatch.");
+    // }
 
     // Map the data to create the desired output
     const transformedData = names.map((name, index) => ({
