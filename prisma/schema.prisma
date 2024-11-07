@@ -369,3 +369,17 @@ model EpayData {
   price          Float
   sku            String
 }
+
+model User {
+  id                      Int      @id @default(autoincrement())
+  email                   String   @unique
+  password                String
+  firstName               String
+  lastName                String
+  adminVerified           Boolean  @default(false)
+  // emailVerified           Boolean  @default(false)
+  // verificationCode        String?
+  // verificationCodeExpires DateTime?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
