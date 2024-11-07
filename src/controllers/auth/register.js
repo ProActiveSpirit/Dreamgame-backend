@@ -37,7 +37,7 @@ async function register(req, res) {
     // const deleteResult = await prisma.user.deleteMany({});
     // console.log(`Deleted ${deleteResult.count} users.`);
 
-    const existingUser = await prisma.user.findFirst({
+    const existingUser = await prisma.user.findUnique({
       where: { email }
     });
 
@@ -51,8 +51,9 @@ async function register(req, res) {
       data: {
         email,
         password: passwordHash,
-        firstName,
+        firstName,  
         lastName,
+        role:""
         // verificationCode,
         // verificationCodeExpires
       },

@@ -376,7 +376,8 @@ model User {
   password                String
   firstName               String
   lastName                String
-  adminVerified           Boolean  @default(false)
+  role                    String
+  // adminVerified           Boolean  @default(false)
   // emailVerified           Boolean  @default(false)
   // verificationCode        String?
   // verificationCodeExpires DateTime?
