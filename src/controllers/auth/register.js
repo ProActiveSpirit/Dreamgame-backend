@@ -51,8 +51,9 @@ async function register(req, res) {
       data: {
         email,
         password: passwordHash,
-        firstName,
+        firstName,  
         lastName,
+        role:""
         // verificationCode,
         // verificationCodeExpires
       },

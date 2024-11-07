@@ -17,8 +17,8 @@ async function login(req, res) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    if (!user.adminVerified && email !== "proactive0217@protonmail.com") {
-      return res.status(403).json({ message: 'You are not verified by SuperAdmin.' });
+    if (!user.role) {
+      return res.status(403).json({ message: 'You are not verified by Administrator.' });
     }
 
     const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '2h' });

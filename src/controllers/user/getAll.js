@@ -3,13 +3,19 @@ const prisma = new PrismaClient();
 
 async function getUserAll(req, res) {
   try {
-    const users = await prisma.user.findMany({});
-    const usersWithoutAdmin = users.slice(1);
-
-    res.json({ users: usersWithoutAdmin });
+    // Modify the query to exclude users with the role of "admin"
+    const users = await prisma.user.findMany({
+      where: {
+        role: {
+          not: 'Admin',
+        },
+      },
+    });
+    console.log("users", users);
+    res.json({ users });
   } catch (error) {
     console.error(error);
-    res.status(400).json({ message: 'Get ALL of USERS failed' });
+    res.status(400).json({ message: 'Get ALL OF USERS Failed' });
   }
 }
 
