@@ -7,10 +7,10 @@ async function Ipcheck(req, res) {
     // Retrieve the user's IP address
     const userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
-    // Ensure the IP is in the correct format for geoip-lite
-    if (!userIp || typeof userIp !== 'string' || userIp === '::1') {
-      throw new Error('Invalid IP address');
-    }
+    // // Ensure the IP is in the correct format for geoip-lite
+    // if (!userIp || typeof userIp !== 'string' || userIp === '::1') {
+    //   throw new Error('Invalid IP address');
+    // }
 
     // Lookup the geolocation information for the IP address
     const geo = geoip.lookup(userIp);
