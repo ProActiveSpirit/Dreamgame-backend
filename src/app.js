@@ -12,6 +12,9 @@ const app = express();
 const corsOptions = {
   origin: 'https://dreamgame-frontend.vercel.app', // Replace with your actual frontend domain
   optionsSuccessStatus: 200, // For legacy browser support
+  credentials: true, // This is important.
+  methods: ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 };
 
 app.use(cors(corsOptions));
