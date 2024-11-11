@@ -8,26 +8,11 @@ const apiRoute = require("./routes/api");
 const app = express();
 
 // Middleware
-
-const corsOptions = {
-  origin: 'https://dreamgame-frontend.vercel.app', // Replace with your actual frontend domain
-  optionsSuccessStatus: 200, // For legacy browser support
-  credentials: true, // This is important.
-  methods: ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-};
-
-app.use(cors(corsOptions));
-
+app.use(cors());
 app.use(express.json());
 app.enable('trust proxy')
 
 app.use("/api" , apiRoute);
-
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
-});
 
 const PORT = 5000;
 
