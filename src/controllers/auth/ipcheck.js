@@ -28,7 +28,7 @@ async function Ipcheck(req, res) {
     console.error('IP Check Error:', error.message, error.stack);
 
     // Respond with a 500 status code and error message
-    res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    res.status(500).json({ message: error });
   }
 }
 
