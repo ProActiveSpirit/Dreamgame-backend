@@ -7,14 +7,28 @@ async function Ipcheck(req, res) {
     // Retrieve the user's IP address
     const userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
+    // Ensure the IP is in the correct format for geoip-lite
+    if (!userIp || typeof userIp !== 'string' || userIp === '::1') {
+      throw new Error('Invalid IP address');
+    }
+
     // Lookup the geolocation information for the IP address
     const geo = geoip.lookup(userIp);
 
+    // Check if geo information is retrieved successfully
+    if (!geo) {
+      throw new Error('Geo information not found for IP');
+    }
+
     // Respond with the IP and region information
-    res.json({ userIp, region: geo ? `${geo.region} - ${geo.country}` : 'Unknown' });
+    res.json({ userIp, region: `${geo.region} - ${geo.country}` });
+
   } catch (error) {
-    console.error('IP Check Error:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    // Log detailed error information
+    console.error('IP Check Error:', error.message, error.stack);
+
+    // Respond with a 500 status code and error message
+    res.status(500).json({ message: 'Internal Server Error', error: error.message });
   }
 }
 
