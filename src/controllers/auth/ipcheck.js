@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const geoip = require('geoip');
 
 async function Ipcheck(req, res) {
   try {
@@ -9,7 +10,7 @@ async function Ipcheck(req, res) {
     res.json({ userIp, region: geo ? `${geo.region} - ${geo.country}` : 'Unknown' });
   } catch (error) {
     console.error(error);
-    res.status(400).json({ message: 'Login failed' });
+    res.status(400).json({ message: error });
   }
 }
 
