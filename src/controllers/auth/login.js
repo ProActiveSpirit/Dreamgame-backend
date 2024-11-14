@@ -25,7 +25,7 @@ async function login(req, res) {
     res.json({ accessToken: token, user });
   } catch (error) {
     console.error(error);
-    res.status(400).json({ message: 'Login failed' });
+    res.status(400).json({ message: error });
   }
 }
 
