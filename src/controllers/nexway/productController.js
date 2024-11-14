@@ -1,4 +1,4 @@
-const { getProducts } = require("../../services/nexway/product");
+const { getProducts } = require("../../services/nexway/products");
 
 async function getProductList(req, res) {
   try {
