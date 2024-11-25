@@ -25,21 +25,10 @@ model Customer {
   twoFactorEnabled Boolean          @default(false)
   apiLogs          APILog[]         @relation(name: "CustomerToAPILog")
   salesOrders      SalesOrder[]     @relation(name: "CustomerToSalesOrder")
-  ipAddress        IPAddress?       @relation(name: "CustomerToIPAddress", fields: [ipAddressId], references: [id])
-  ipAddressId      String?          @unique
   crmData          CRMData[]        @relation(name: "CustomerToCRMData")
   generatedEmails  GeneratedEmail[] @relation(name: "CustomerToGeneratedEmail")
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
-}
-
-// IPAddress Model
-model IPAddress {
-  id        String    @id @default(uuid())
-  ip        String    @unique
-  country   String
-  customer  Customer? @relation(name: "CustomerToIPAddress")
-  createdAt DateTime  @default(now())
 }
 
 // GeneratedEmail Model
