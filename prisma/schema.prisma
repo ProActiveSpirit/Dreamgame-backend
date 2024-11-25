@@ -19,26 +19,14 @@ model Customer {
   id               String           @id @default(uuid())
   name             String
   email            String           @unique
-  generatedEmail   String?          @unique
   website          String
   status           CustomerStatus
   twoFactorEnabled Boolean          @default(false)
   apiLogs          APILog[]         @relation(name: "CustomerToAPILog")
   salesOrders      SalesOrder[]     @relation(name: "CustomerToSalesOrder")
   crmData          CRMData[]        @relation(name: "CustomerToCRMData")
-  generatedEmails  GeneratedEmail[] @relation(name: "CustomerToGeneratedEmail")
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @updatedAt
-}
-
-// GeneratedEmail Model
-model GeneratedEmail {
-  id         String   @id @default(uuid())
-  email      String   @unique
-  customerId String
-  purpose    String // e.g., "Test", "Promotional"
-  createdAt  DateTime @default(now())
-  customer   Customer @relation(name: "CustomerToGeneratedEmail", fields: [customerId], references: [id])
 }
 
 model Product {
