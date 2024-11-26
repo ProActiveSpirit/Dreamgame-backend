@@ -305,7 +305,7 @@ model NintendoData {
   region String
   @@unique([fs_id, region])
 }
-
+  
 model Store {
   id             Int            @id @default(autoincrement())
   storeID        String         @unique
