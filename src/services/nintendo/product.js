@@ -6,7 +6,6 @@ async function getProducts() {
   let allResults = [];
   let result = [];
   result = await prisma.nintendoData.findMany({});
-  console.log("products");
   try{
     allResults = result.map((game) => {
       return {
@@ -15,7 +14,7 @@ async function getProducts() {
         price: game.price_regular_f,
         provider: "Nintendo",
         region: game.region,
-        sku: game.product_code_txt[0],
+        sku: game.prodct_code_txt[0],
         publisher: game.publisher,
         status: "Active",
         createdAt: game.pretty_date_s,
@@ -27,8 +26,8 @@ async function getProducts() {
       `Failed to fetch data for product information: ${error.message}`
     );
   }
-
-  return allResults;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+  return allResults;        
 }
 
 module.exports = { getProducts };

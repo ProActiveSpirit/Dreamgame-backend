@@ -10,7 +10,7 @@ let cnt = 0 ;
 async function productSync() {
   for (const countryCode of europeanCountryCodes) {
     const options = {
-      limit: 20,
+      limit: 100,
       locale: countryCode.toLowerCase(),
     };
 
@@ -19,8 +19,6 @@ async function productSync() {
 
       for (const game of result) {
         cnt++;
-        console.log("game.product_code_txt", game.product_code_txt[0], game.fs_id, cnt, countryCode);
-
         const gameData = {
           fs_id: game.fs_id,
           change_date: new Date(game.change_date),
