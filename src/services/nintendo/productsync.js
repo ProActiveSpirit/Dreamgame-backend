@@ -82,17 +82,30 @@ async function productSync() {
           version: game._version_ ? game._version_ : "",
         };
 
+        const existingData = await prisma.nintendoData.findFirst({
+          where: {
+            fs_id: game.fs_id
+          },  
+        });     
+        
+        // If `existingData` exists, use its region; otherwise, set an empty string
+        const existingRegion = existingData?.region || '';
+
+        // Safely merge the new `countryCode` into the existing region
+        const newRegion = existingRegion
+          .split(',')
+          .concat(countryCode) // Add the new region
+          .filter((value, index, self) => self.indexOf(value) === index) // Ensure unique regions
+          .join(',');
+
         await prisma.nintendoData.upsert({
-          where: { 
-              fs_id_region: {
-                  fs_id: game.fs_id,
-                  region: countryCode,
-              }
+          where: {  
+            fs_id: game.fs_id,
            },
           update: {
             ...gameData,
             version: String(gameData.version),
-            region: countryCode
+            region: newRegion
           },
           create: {
             ...gameData,

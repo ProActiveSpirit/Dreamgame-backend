@@ -20,7 +20,7 @@ model Customer {
   name             String
   email            String           @unique
   website          String
-  status           CustomerStatus
+  status           CustomerStatus  
   twoFactorEnabled Boolean          @default(false)
   apiLogs          APILog[]         @relation(name: "CustomerToAPILog")
   salesOrders      SalesOrder[]     @relation(name: "CustomerToSalesOrder")
@@ -242,7 +242,7 @@ model CRMData {
 
 model NintendoData {
   id               String   @id @default(uuid()) 
-  fs_id            String?
+  fs_id            String?  @unique
   change_date      DateTime?
   url              String?
   type             String?
@@ -303,7 +303,6 @@ model NintendoData {
   downloads_rank_i Int?
   version  String?
   region String
-  @@unique([fs_id, region])
 }
   
 model Store {

@@ -13,7 +13,7 @@ async function getProducts() {
       "utf8"
     );
     const skuData = fs.readFileSync(path.join(__dirname, "sku.txt"), "utf8");
-
+    
     // Parse the JSON data
     const names = nameData.split("\n").filter(Boolean);
     const prices = priceData.split("\n").filter(Boolean);
@@ -33,9 +33,9 @@ async function getProducts() {
       region: "en",
       sku: skus[index].trim(),
       publisher: "Epay",
-      region_sku: "en" +  skus[index].trim(),
+      // region_sku: "en" +  skus[index].trim(),
       status: "Active",
-      createdAt: "   "
+      createdAt: "   ",
     }));
 
     // Perform the database operations

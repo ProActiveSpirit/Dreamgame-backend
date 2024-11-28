@@ -33,9 +33,9 @@ async function getProducts() {
       region: "en",
       sku: skus[index].trim(),
       publisher: "Nexway",
-      region_sku: "en" +  skus[index].trim(),
+      // region_sku: "en" +  skus[index].trim(),
       status: "Active",
-      createdAt: "   "
+      createdAt: "   ",
     }));
 
     // Perform the database operations

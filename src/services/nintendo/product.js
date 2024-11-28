@@ -14,11 +14,11 @@ async function getProducts() {
         price: game.price_regular_f,
         provider: "Nintendo",
         region: game.region,
-        sku: game.prodct_code_txt[0],
+        sku: game.product_code_txt[0],
         publisher: game.publisher,
         status: "Active",
-        createdAt: game.pretty_date_s,
-        region_sku: game.region + game.product_code_txt[0]
+        createdAt: game.pretty_date_s
+        // region_sku: game.region + game.product_code_txt[0]
       };
     });
   } catch (error) {
