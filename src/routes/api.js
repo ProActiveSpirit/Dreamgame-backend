@@ -5,6 +5,7 @@ const nintendoRoutes = require("./nintendo");
 const epayRoutes = require("./epay");
 const authRoutes = require("./auth");
 const userRoutes = require("./user");
+const salesRoutes = require("./order")
 
 const router = express.Router();
 
@@ -15,6 +16,7 @@ router.use("/nintendo", nintendoRoutes);
 router.use("/epay", epayRoutes);
 router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
+router.use("/sales", salesRoutes);
 
 router.get("/", (req, res) => {
     return res.status(200).json({ message: "Ok" });
