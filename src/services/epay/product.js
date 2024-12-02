@@ -55,7 +55,7 @@ async function getProducts() {
     // saveDataToDatabase().catch(console.error);
 
     
-    return transformedData;
+    return [transformedData];
   } catch (error) {
     throw new Error(`Failed to get products: ${error.message}`);
   }

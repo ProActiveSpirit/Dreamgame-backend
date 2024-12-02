@@ -1,7 +1,5 @@
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../../prisma');
 const { getGamesEurope } = require('nintendo-switch-eshop');
-
-const prisma = new PrismaClient();
 
 // Define the locales you want to fetch data for
 const europeanCountryCodes = ['en', 'de', 'fr', 'es', 'it', 'nl', 'pt', 'ru']; // Add more as needed

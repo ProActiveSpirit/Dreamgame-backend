@@ -78,11 +78,13 @@ model SalesOrder {
   customerId        String
   productId         String
   sku               String // Ensure SKU is included for linking
+  salesVat          Float
   salesIncVat       Float
   salesExcVat       Float
   expectedCost      Float
   calculatedAvgCost Float
-  quantity          Int
+  totalQuantity     Int
+  processQuantity   Int
   salesCurrency     String
   totalPrice        Float
   product           Product             @relation(name: "ProductSales", fields: [productId], references: [id])

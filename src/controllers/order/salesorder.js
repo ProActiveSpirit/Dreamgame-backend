@@ -1,5 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const prisma = require('../../prisma');
 
 // ------------------------------------------------------
 // Get All Sales Orders
@@ -42,23 +41,31 @@ async function getSale(req, res) {
 // Add a New Sales Order
 // ------------------------------------------------------
 async function addSales(req, res) {
-  console.log("add sales: " , req.body);
-  // const { name, quantity, price } = req.body;
+  const { salesIncVat, salesVat, salesExtVat, salesCurrency, Quantity, endDate, startDate, sku, customerId, productId} = req.body;
 
   // if (!name || !quantity || !price) {
   //   return res.status(400).json({ success: false, message: "All fields are required" });
   // }
-
+  const prisma = require('../../prisma');
   try {
     // Create a new sales order
-    // const newSalesOrder = await prisma.salesOrder.create({
-    //   data: {
-    //     name,
-    //     quantity: parseInt(quantity),
-    //     price: parseFloat(price),
-    //   },
-    // });
-    const newSalesOrder=[];
+    const newSalesOrder = await prisma.salesOrder.create({
+      data: {
+        salesIncVat,
+        salesVat,
+        salesExtVat,
+        salesCurrency,
+        quantity: parseInt(Quantity),
+        endDate,
+        startDate,
+        sku,
+        price: parseFloat(price),
+        totalPrice: parseFloat(price),
+        status: false,
+        customerId,
+        productId,
+      },
+    });
 
     res.status(201).json({ success: true, data: newSalesOrder });
   } catch (error) {

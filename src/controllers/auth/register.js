@@ -1,7 +1,6 @@
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const prisma = require('../../prisma');
 
 // function generateVerificationCode() {
 //   return Math.floor(100000 + Math.random() * 900000).toString();
