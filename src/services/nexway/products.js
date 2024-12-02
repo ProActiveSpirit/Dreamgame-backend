@@ -38,21 +38,21 @@ async function getProducts() {
       createdAt: "   ",
     }));
 
-    // Perform the database operations
-    async function saveDataToDatabase() {
-      await Promise.all(transformedData.map(async (data) => {
-        await prisma.epayData.create({
-          data: {
-            name: data.name,
-            price: data.price,
-            sku: data.sku,
-          }
-        });
-      }));
-    }
+    // // Perform the database operations
+    // async function saveDataToDatabase() {
+    //   await Promise.all(transformedData.map(async (data) => {
+    //     await prisma.epayData.create({
+    //       data: {
+    //         name: data.name,
+    //         price: data.price,
+    //         sku: data.sku,
+    //       }
+    //     });
+    //   }));
+    // }
 
-    // Call the function to execute it
-    saveDataToDatabase().catch(console.error);
+    // // Call the function to execute it
+    // saveDataToDatabase().catch(console.error);
 
     
     return transformedData;

@@ -1,24 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const {
-    getSales,
-    editSales,
-    addSales
+  getSalesAll,
+  getSale,
+  editSales,
+  addSales,
 } = require("../../controllers/order/salesorder");
 
-const {
-    getPurchase,
-    editPurchase,
-    addPurchase
-} = require("../../controllers/order/purchaseorder");
-
-router.post("/sales/getAll", getSales);
-router.post("/sales/edit", editSales);
-router.post("/sales/add", addSales);
-
-router.post("/purchase/getAll", getPurchase);
-router.post("/purchase/edit", editPurchase);
-router.post("/purchase/add", addPurchase);
+// Routes
+router.get("/getSalesAll", getSalesAll); // Fetch all sales orders
+router.get("/getSale", getSale); // Fetch a single sales order by ID or name
+router.post("/addSales", addSales); // Add a new sales order
+router.put("/editSales", editSales); // Edit an existing sales order
 
 module.exports = router;
- 

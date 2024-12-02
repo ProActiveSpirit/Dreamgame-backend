@@ -1,30 +1,98 @@
-async function getSales(req, res) {
-    try {
-        const token = await getUserToken();
-        res.json({ accessToken: token });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
+// ------------------------------------------------------
+// Get All Sales Orders
+// ------------------------------------------------------
+async function getSalesAll(req, res) {
+  try {
+    const salesOrders = await prisma.salesOrder.findMany({}); // Fetch all sales orders
+    console.log("salesOrders" , salesOrders);
+    res.status(200).json({ success: true, data: salesOrders });
+  } catch (error) {
+    console.error("Error fetching sales orders:", error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
 }
 
-async function editSales(req, res) {
-    try {
-        const { token } = req.body;
-        await invalidateToken(token);
-        res.json({ message: "Token invalidated successfully" });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+// ------------------------------------------------------
+// Get a Single Sales Order by ID
+// ------------------------------------------------------
+async function getSale(req, res) {
+  const { id } = req.query; // Expecting `id` as a query parameter
+
+  try {
+    // Find the sales order by ID
+    const salesOrder = await prisma.salesOrder.findUnique({
+      where: { id: parseInt(id) },
+    });
+
+    if (!salesOrder) {
+      return res.status(404).json({ success: false, message: "Sales order not found" });
     }
+
+    res.status(200).json({ success: true, data: salesOrder });
+  } catch (error) {
+    console.error("Error fetching sales order:", error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
 }
 
+// ------------------------------------------------------
+// Add a New Sales Order
+// ------------------------------------------------------
 async function addSales(req, res) {
-    try {
-        const { token } = req.body;
-        await invalidateToken(token);
-        res.json({ message: "Token invalidated successfully" });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+  console.log("add sales: " , req.body);
+  // const { name, quantity, price } = req.body;
+
+  // if (!name || !quantity || !price) {
+  //   return res.status(400).json({ success: false, message: "All fields are required" });
+  // }
+
+  try {
+    // Create a new sales order
+    // const newSalesOrder = await prisma.salesOrder.create({
+    //   data: {
+    //     name,
+    //     quantity: parseInt(quantity),
+    //     price: parseFloat(price),
+    //   },
+    // });
+    const newSalesOrder=[];
+
+    res.status(201).json({ success: true, data: newSalesOrder });
+  } catch (error) {
+    console.error("Error adding sales order:", error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
 }
 
-module.exports = { getSales, editSales, addSales };
+// ------------------------------------------------------
+// Edit an Existing Sales Order
+// ------------------------------------------------------
+async function editSales(req, res) {
+  const { id, name, quantity, price } = req.body;
+
+  if (!id) {
+    return res.status(400).json({ success: false, message: "Sales order ID is required" });
+  }
+
+  try {
+    // Update the sales order with the provided fields
+    const updatedSalesOrder = await prisma.salesOrder.update({
+      where: { id: parseInt(id) },
+      data: {
+        ...(name && { name }),
+        ...(quantity && { quantity: parseInt(quantity) }),
+        ...(price && { price: parseFloat(price) }),
+      },
+    });
+
+    res.status(200).json({ success: true, data: updatedSalesOrder });
+  } catch (error) {
+    console.error("Error editing sales order:", error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
+}
+
+module.exports = { getSalesAll, getSale, addSales, editSales };

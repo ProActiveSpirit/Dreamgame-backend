@@ -8,19 +8,19 @@ generator client {
   binaryTargets = ["native", "rhel-openssl-1.0.x", "rhel-openssl-3.0.x"]
 }
 
-// Enum for Customer Status
-enum CustomerStatus {
-  ACTIVE
-  INACTIVE
-  TEST
-}
+// // Enum for Customer Status
+// enum CustomerStatus {
+//   ACTIVE
+//   INACTIVE
+//   TEST
+// }
 
 model Customer {
   id               String           @id @default(uuid())
   name             String
   email            String           @unique
   website          String
-  status           CustomerStatus  
+  // status           CustomerStatus  
   twoFactorEnabled Boolean          @default(false)
   apiLogs          APILog[]         @relation(name: "CustomerToAPILog")
   salesOrders      SalesOrder[]     @relation(name: "CustomerToSalesOrder")
@@ -81,7 +81,7 @@ model SalesOrder {
   salesIncVat       Float
   salesExcVat       Float
   expectedCost      Float
-  calculatedAvgCost Float?
+  calculatedAvgCost Float
   quantity          Int
   salesCurrency     String
   totalPrice        Float
