@@ -5,12 +5,16 @@ const prisma = require('../../prisma');
 // ------------------------------------------------------
 async function getSalesAll(req, res) {
   try {
-    const salesOrders = await prisma.salesOrder.findMany({}); // Fetch all sales orders
-    console.log("salesOrders" , salesOrders);
-    res.status(200).json({ success: true, data: salesOrders });
+    const salesOrders = await prisma.salesOrder.findMany({
+      include: {
+        product: true, // Include the related Product details
+        customer: true, // Include the related Customer details
+      }
+    }); // Fetch all sales orders
+    res.status(200).json({ salesOrders });
   } catch (error) {
     console.error("Error fetching sales orders:", error.message);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ error: error.message });
   }
 }
 
@@ -41,7 +45,7 @@ async function getSale(req, res) {
 // Add a New Sales Order
 // ------------------------------------------------------
 async function addSales(req, res) {
-  const { salesIncVat, salesVat, salesExtVat, salesCurrency, Quantity, endDate, startDate, sku, customerId, productId} = req.body;
+  const { salesIncVat, salesVat, salesExtVat, salesCurrency, Quantity, endDate, startDate, Customer, Product} = req.body;
 
   // if (!name || !quantity || !price) {
   //   return res.status(400).json({ success: false, message: "All fields are required" });
@@ -50,23 +54,25 @@ async function addSales(req, res) {
     // Create a new sales order
     const newSalesOrder = await prisma.salesOrder.create({
       data: {
-        salesIncVat,
+        customerId: Customer,
+        productId: Product,
         salesVat,
+        salesIncVat,
         salesExtVat,
+        expectedCost: parseFloat(salesExtVat*Quantity),
+        avgCost: salesIncVat,
+        processQuantity: 0,
+        totalQuantity: parseInt(Quantity),
         salesCurrency,
-        quantity: parseInt(Quantity),
-        endDate,
+        totalPrice: parseFloat(salesIncVat*Quantity),
         startDate,
-        sku,
-        price: parseFloat(price),
-        totalPrice: parseFloat(price),
-        status: false,
-        customerId,
-        productId,
+        endDate,  
+        status: "Processing",
+        N_A: "N/A",
       },
     });
 
-    res.status(201).json({ success: true, data: newSalesOrder });
+    res.status(200).json({ success: true, data: newSalesOrder });
   } catch (error) {
     console.error("Error adding sales order:", error.message);
     res.status(500).json({ success: false, error: error.message });

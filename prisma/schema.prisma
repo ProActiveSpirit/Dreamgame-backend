@@ -20,7 +20,6 @@ model Customer {
   name             String
   email            String           @unique
   website          String
-  // status           CustomerStatus  
   twoFactorEnabled Boolean          @default(false)
   apiLogs          APILog[]         @relation(name: "CustomerToAPILog")
   salesOrders      SalesOrder[]     @relation(name: "CustomerToSalesOrder")
@@ -74,22 +73,24 @@ model Pricing {
 
 model SalesOrder {
   id                String              @id @default(uuid())
-  salesOrderNumber  String              @unique
   customerId        String
   productId         String
-  sku               String // Ensure SKU is included for linking
   salesVat          Float
   salesIncVat       Float
-  salesExcVat       Float
+  salesExtVat       Float
   expectedCost      Float
-  calculatedAvgCost Float
-  totalQuantity     Int
+  avgCost Float
   processQuantity   Int
+  totalQuantity     Int
   salesCurrency     String
   totalPrice        Float
-  product           Product             @relation(name: "ProductSales", fields: [productId], references: [id])
-  createdOn         DateTime            @default(now())
+  startDate         DateTime
+  endDate           DateTime
+  status            String
+  N_A               String
   confirmed         Boolean             @default(false)
+  createdOn         DateTime            @default(now())
+  product           Product             @relation(name: "ProductSales", fields: [productId], references: [id])
   customer          Customer            @relation(name: "CustomerToSalesOrder", fields: [customerId], references: [id])
   packages          Package[]           @relation(name: "PackageToSalesOrder")
   purchaseOrders    PurchaseOrderLink[] // Link to PurchaseOrder through intermediary model
