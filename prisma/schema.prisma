@@ -8,19 +8,18 @@ generator client {
   binaryTargets = ["native", "rhel-openssl-1.0.x", "rhel-openssl-3.0.x"]
 }
 
-// Enum for Customer Status
-enum CustomerStatus {
-  ACTIVE
-  INACTIVE
-  TEST
-}
+// // Enum for Customer Status
+// enum CustomerStatus {
+//   ACTIVE
+//   INACTIVE
+//   TEST
+// }
 
 model Customer {
   id               String           @id @default(uuid())
   name             String
   email            String           @unique
   website          String
-  status           CustomerStatus
   twoFactorEnabled Boolean          @default(false)
   apiLogs          APILog[]         @relation(name: "CustomerToAPILog")
   salesOrders      SalesOrder[]     @relation(name: "CustomerToSalesOrder")
@@ -32,20 +31,20 @@ model Customer {
 model Product {
   id                   String          @id @default(uuid())
   name                 String
-  availableKeysInStock Int
-  salesOrders          SalesOrder[]    @relation(name: "ProductSales")
+  stock                Int[]
+  price                Float
   provider             String
   region               String
   sku                  String          @unique
-  pricing              Pricing?        @relation(name: "PricingToProduct")
   publisher            String
-  availabilityStatus   String
+  status               String
   promotionStart       DateTime?
   promotionEnd         DateTime?
-  purchaseOrders       PurchaseOrder[] @relation(name: "ProductPurchase")
-  createdAt            DateTime        @default(now())
   updatedAt            DateTime        @updatedAt
-  gameCode             String
+  createdAt            DateTime        @default(now())
+  salesOrders          SalesOrder[]    @relation(name: "ProductSales")
+  pricing              Pricing?        @relation(name: "PricingToProduct")
+  purchaseOrders       PurchaseOrder[] @relation(name: "ProductPurchase")
   stockQty             StockQty?       @relation(name: "ProductToStockQty")
   packages             Package[]       @relation(name: "PackageToProduct")
 }
@@ -74,20 +73,24 @@ model Pricing {
 
 model SalesOrder {
   id                String              @id @default(uuid())
-  salesOrderNumber  String              @unique
   customerId        String
   productId         String
-  sku               String // Ensure SKU is included for linking
+  salesVat          Float
   salesIncVat       Float
-  salesExcVat       Float
+  salesExtVat       Float
   expectedCost      Float
-  calculatedAvgCost Float?
-  quantity          Int
+  avgCost Float
+  processQuantity   Int
+  totalQuantity     Int
   salesCurrency     String
   totalPrice        Float
-  product           Product             @relation(name: "ProductSales", fields: [productId], references: [id])
-  createdOn         DateTime            @default(now())
+  startDate         DateTime
+  endDate           DateTime
+  status            String
+  N_A               String
   confirmed         Boolean             @default(false)
+  createdOn         DateTime            @default(now())
+  product           Product             @relation(name: "ProductSales", fields: [productId], references: [id])
   customer          Customer            @relation(name: "CustomerToSalesOrder", fields: [customerId], references: [id])
   packages          Package[]           @relation(name: "PackageToSalesOrder")
   purchaseOrders    PurchaseOrderLink[] // Link to PurchaseOrder through intermediary model
@@ -242,7 +245,7 @@ model CRMData {
 
 model NintendoData {
   id               String   @id @default(uuid()) 
-  fs_id            String?
+  fs_id            String?  @unique
   change_date      DateTime?
   url              String?
   type             String?
@@ -303,7 +306,6 @@ model NintendoData {
   downloads_rank_i Int?
   version  String?
   region String
-  @@unique([fs_id, region])
 }
   
 model Store {
