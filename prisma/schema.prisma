@@ -32,20 +32,20 @@ model Customer {
 model Product {
   id                   String          @id @default(uuid())
   name                 String
-  availableKeysInStock Int
-  salesOrders          SalesOrder[]    @relation(name: "ProductSales")
+  stock                Int[]
+  price                Float
   provider             String
   region               String
   sku                  String          @unique
-  pricing              Pricing?        @relation(name: "PricingToProduct")
   publisher            String
-  availabilityStatus   String
+  status               String
   promotionStart       DateTime?
   promotionEnd         DateTime?
-  purchaseOrders       PurchaseOrder[] @relation(name: "ProductPurchase")
-  createdAt            DateTime        @default(now())
   updatedAt            DateTime        @updatedAt
-  gameCode             String
+  createdAt            DateTime        @default(now())
+  salesOrders          SalesOrder[]    @relation(name: "ProductSales")
+  pricing              Pricing?        @relation(name: "PricingToProduct")
+  purchaseOrders       PurchaseOrder[] @relation(name: "ProductPurchase")
   stockQty             StockQty?       @relation(name: "ProductToStockQty")
   packages             Package[]       @relation(name: "PackageToProduct")
 }

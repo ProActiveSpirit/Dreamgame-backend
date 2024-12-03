@@ -27,32 +27,35 @@ async function getProducts() {
     // Map the data to create the desired output
     const transformedData = names.map((name, index) => ({
       name: name.trim(),
-      stock: "Stock",
+      stock: [1,0,0,0],
       price: parseFloat(prices[index].trim()),
       provider: "Nexway",
-      region: "en",
+      region: "en,de,fr,es,it,nl,pt",
       sku: skus[index].trim(),
       publisher: "Nexway",
-      // region_sku: "en" +  skus[index].trim(),
-      status: "Active",
-      createdAt: "   ",
+      status: parseFloat(prices[index].trim()) ? "Active": "InActive",
     }));
 
-    // // Perform the database operations
-    // async function saveDataToDatabase() {
-    //   await Promise.all(transformedData.map(async (data) => {
-    //     await prisma.epayData.create({
-    //       data: {
-    //         name: data.name,
-    //         price: data.price,
-    //         sku: data.sku,
-    //       }
-    //     });
-    //   }));
-    // }
+    // Perform the database operations
+    async function saveDataToDatabase() {
+      await Promise.all(transformedData.map(async (data) => {
+        await prisma.Product.create({
+          data: {
+            name: data.name,
+            stock: data.stock,
+            price: data.price,
+            provider: data.provider,
+            region: data.region,
+            sku: data.sku,
+            publisher: data.publisher,
+            status: data.price ? "Active": "InActive",
+          }
+        });
+      }));
+    }
 
-    // // Call the function to execute it
-    // saveDataToDatabase().catch(console.error);
+    // Call the function to execute it
+    saveDataToDatabase().catch(console.error);
 
     
     return transformedData;

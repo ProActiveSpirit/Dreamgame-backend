@@ -46,7 +46,6 @@ async function addSales(req, res) {
   // if (!name || !quantity || !price) {
   //   return res.status(400).json({ success: false, message: "All fields are required" });
   // }
-  const prisma = require('../../prisma');
   try {
     // Create a new sales order
     const newSalesOrder = await prisma.salesOrder.create({
