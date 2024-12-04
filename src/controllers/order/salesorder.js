@@ -19,29 +19,6 @@ async function getSalesAll(req, res) {
 }
 
 // ------------------------------------------------------
-// Get a Single Sales Order by ID
-// ------------------------------------------------------
-async function getSale(req, res) {
-  const { id } = req.query; // Expecting `id` as a query parameter
-
-  try {
-    // Find the sales order by ID
-    const salesOrder = await prisma.salesOrder.findUnique({
-      where: { id: parseInt(id) },
-    });
-
-    if (!salesOrder) {
-      return res.status(404).json({ success: false, message: "Sales order not found" });
-    }
-
-    res.status(200).json({ success: true, data: salesOrder });
-  } catch (error) {
-    console.error("Error fetching sales order:", error.message);
-    res.status(500).json({ success: false, error: error.message });
-  }
-}
-
-// ------------------------------------------------------
 // Add a New Sales Order
 // ------------------------------------------------------
 async function addSales(req, res) {
@@ -107,4 +84,30 @@ async function editSales(req, res) {
   }
 }
 
-module.exports = { getSalesAll, getSale, addSales, editSales };
+// ------------------------------------------------------
+// Delete an Existing Sales Order
+// ------------------------------------------------------
+async function deleteSale(req, res) {
+  const { id } = req.params; // Extract the ID from the URL parameters
+  console.log("id" , id);
+  if (!id) {
+    return res.status(400).json({ success: false, message: "Sales order ID is required" });
+  }
+
+  try {
+    // Delete the sales order using Prisma (or your ORM)
+    const deletedSalesOrder = await prisma.salesOrder.delete({
+      where: { id }, // Ensure the ID is parsed as an integer
+    });
+
+    // Respond with success and the deleted sales order info
+    res.status(200).json({ success: true, data: deletedSalesOrder });
+  } catch (error) {
+    console.error("Error deleting sales order:", error.message);
+
+    // Handle errors such as record not found
+    res.status(500).json({ success: false, error: error.message });
+  }
+}
+
+module.exports = { getSalesAll, deleteSale, addSales, editSales };
