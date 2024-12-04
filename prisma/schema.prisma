@@ -79,7 +79,7 @@ model SalesOrder {
   salesIncVat       Float
   salesExtVat       Float
   expectedCost      Float
-  avgCost Float
+  avgCost           Float
   processQuantity   Int
   totalQuantity     Int
   salesCurrency     String
