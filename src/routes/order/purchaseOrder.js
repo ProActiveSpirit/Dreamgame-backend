@@ -2,14 +2,15 @@ const express = require("express");
 const router = express.Router();
 const {
   getPurchaseAll,
-  getPurchase,
+  deletePurchase,
   editPurchase,
   addPurchase,
 } = require("../../controllers/order/purchaseorder");
 
-router.get("/getPruchaseAll", getPurchaseAll);                                 
-router.get("/getPruchase", getPurchase);
-router.post("/editPruchases", editPurchase);
-router.put("/addPruchase", addPurchase);
+// Routes
+router.get("/getPurchaseAll", getPurchaseAll); // Fetch all sales orders
+router.post("/addPurchase", addPurchase); // Add a new sales order
+router.put("/editPurchase", editPurchase); // Edit an existing sales order
+router.delete("/deletePurchase/:id", deletePurchase); // Delete a sales order by ID
 
 module.exports = router;
