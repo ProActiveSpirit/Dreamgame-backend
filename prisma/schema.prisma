@@ -20,6 +20,8 @@ model Customer {
   name             String
   email            String           @unique
   website          String
+  ip               String
+  region           String
   twoFactorEnabled Boolean          @default(false)
   apiLogs          APILog[]         @relation(name: "CustomerToAPILog")
   salesOrders      SalesOrder[]     @relation(name: "CustomerToSalesOrder")
@@ -93,37 +95,26 @@ model SalesOrder {
   product           Product             @relation(name: "ProductSales", fields: [productId], references: [id])
   customer          Customer            @relation(name: "CustomerToSalesOrder", fields: [customerId], references: [id])
   packages          Package[]           @relation(name: "PackageToSalesOrder")
-  purchaseOrders    PurchaseOrderLink[] // Link to PurchaseOrder through intermediary model
+  purchaseOrders    PurchaseOrder[]     @relation("SalesToPurchaseOrder") // Updated relation
 }
 
 model PurchaseOrder {
-  id           String              @id @default(uuid())
-  productId    String
-  sku          String // Ensure SKU is included for linking
-  product      Product             @relation(name: "ProductPurchase", fields: [productId], references: [id])
-  productName  String
-  provider     String
-  quantity     Int
-  sales        Float
-  expectedCost Float
-  costIncVat   Float
-  stocking     String
-  job          Int
-  status       String
-  region       String
-  startDatePOs DateTime
-  endDatePOs   DateTime
-  createdOn    DateTime            @default(now())
-  salesOrders  PurchaseOrderLink[] // Link to SalesOrder through intermediary model
-}
-
-model PurchaseOrderLink {
-  id              String        @id @default(uuid())
-  salesOrderId    String
-  purchaseOrderId String
-  salesOrder      SalesOrder    @relation(fields: [salesOrderId], references: [id])
-  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id])
-  sku             String
+  id                String              @id @default(uuid())
+  productId         String
+  costIncVat        Float
+  costExtVat        Float
+  processQuantity   Int
+  totalQuantity     Int
+  totalPrice        Float
+  job               Int
+  status            String
+  region            String
+  startDate         DateTime
+  endDate           DateTime
+  createdOn         DateTime            @default(now())
+  salesOrderId      String?             // New field to link a sales order
+  salesOrder        SalesOrder?         @relation("SalesToPurchaseOrder", fields: [salesOrderId], references: [id])
+  product           Product             @relation(name: "ProductPurchase", fields: [productId], references: [id])
 }
 
 // BillingInformation Model

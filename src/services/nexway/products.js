@@ -39,7 +39,7 @@ async function getProducts() {
     // Perform the database operations
     async function saveDataToDatabase() {
       await Promise.all(transformedData.map(async (data) => {
-        await prisma.Product.create({
+        await prisma.product.create({
           data: {
             name: data.name,
             stock: data.stock,

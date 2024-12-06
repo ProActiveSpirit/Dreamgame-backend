@@ -110,4 +110,98 @@ async function deleteSale(req, res) {
   }
 }
 
-module.exports = { getSalesAll, deleteSale, addSales, editSales };
+// -------------------------------------------------------------
+// Save the Related PurchaseOrders
+// -------------------------------------------------------------
+
+async function saveRelatedPurchase(req, res) {
+  const { id, purchase } = req.body;
+  // Validate that the sales order ID is provided
+  if (!id) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Sales order ID is required" });
+  }
+
+  if (!purchase || !Array.isArray(purchase)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Purchase orders data is required" });
+  }
+
+  try {
+    // Check if the SalesOrder exists
+    const salesOrder = await prisma.salesOrder.findUnique({
+      where: { id },
+    });
+
+    if (!salesOrder) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Sales order not found" });
+    }
+
+    // Fetch all valid Product IDs from the database
+    const validProductIds = await prisma.product.findMany({
+      select: { id: true },
+    });
+
+    const productIdSet = new Set(validProductIds.map((product) => product.id));
+
+    // Filter out purchases with invalid Product Name or Quantity == 0
+    const validPurchaseOrders = purchase.filter(
+      (p) => p.Quantity > 0 && p.Product && productIdSet.has(p.ProductId)
+    );
+
+    if (validPurchaseOrders.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No valid purchase orders to save (invalid Product IDs or all entries have Quantity = 0)",
+      });
+    }
+
+    // Create new PurchaseOrder records
+    const createdPurchaseOrders = await Promise.all(
+      validPurchaseOrders.map((p) =>
+        prisma.purchaseOrder.create({
+          data: {
+            region: p.Region || null,
+            productId: p.ProductId, // Valid Product ID
+            costIncVat: parseFloat(p.CostIncVat) || 0,
+            costExtVat: parseFloat(p.CostExtVat) || 0,
+            processQuantity: parseInt(p.Quantity), // Use Quantity for processQuantity
+            totalQuantity: parseInt(p.Quantity), // Assuming totalQuantity is the same as Quantity
+            totalPrice: parseFloat(p.TotalCostIncVat) || 0,
+            job:0,
+            status: "Processing", // Default status
+            salesOrderId: id, // Link the purchase order to the sales order
+            startDate: new Date(), // Default to now, or adjust as needed
+            endDate: new Date(new Date().getTime() + 24 * 60 * 60 * 1000), // Set endDate to 24 hours from now
+            createdOn: new Date(),
+          },
+        })
+      )
+    );
+
+    // Update the SalesOrder with the new PurchaseOrders
+    await prisma.salesOrder.update({
+      where: { id },
+      data: {
+        purchaseOrders: {
+          connect: createdPurchaseOrders.map((po) => ({ id: po.id })), // Connect created PurchaseOrders
+        },
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Purchase orders saved and linked to the sales order successfully",
+      data: createdPurchaseOrders,
+    });
+  } catch (error) {
+    console.error("Error saving purchase orders:", error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
+}
+
+module.exports = { getSalesAll, deleteSale, addSales, editSales, saveRelatedPurchase };

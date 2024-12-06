@@ -20,11 +20,11 @@ async function getProducts() {
         // region_sku: game.region + game.product_code_txt[0]
       };
     });
-
+    console.log("allResults" , allResults);
      // Perform the database operations
      async function saveDataToDatabase() {
       await Promise.all(allResults.map(async (data) => {
-        await prisma.Product.create({
+        await prisma.product.create({
           data: {
             name: data.name,
             stock: data.stock,
