@@ -10,9 +10,9 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.enable('trust proxy')
+app.enable("trust proxy");
 
-app.use("/api" , apiRoute);
+app.use("/api", apiRoute);
 
 const PORT = 5000;
 

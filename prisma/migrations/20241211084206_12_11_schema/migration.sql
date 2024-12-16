@@ -1,16 +1,12 @@
--- CreateEnum
-CREATE TYPE "CustomerStatus" AS ENUM ('ACTIVE', 'INACTIVE', 'TEST');
-
 -- CreateTable
 CREATE TABLE "Customer" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "generatedEmail" TEXT,
     "website" TEXT NOT NULL,
-    "status" "CustomerStatus" NOT NULL,
+    "ip" TEXT NOT NULL,
+    "region" TEXT NOT NULL,
     "twoFactorEnabled" BOOLEAN NOT NULL DEFAULT false,
-    "ipAddressId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -18,41 +14,20 @@ CREATE TABLE "Customer" (
 );
 
 -- CreateTable
-CREATE TABLE "IPAddress" (
-    "id" TEXT NOT NULL,
-    "ip" TEXT NOT NULL,
-    "country" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "IPAddress_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "GeneratedEmail" (
-    "id" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "customerId" TEXT NOT NULL,
-    "purpose" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "GeneratedEmail_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Product" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "availableKeysInStock" INTEGER NOT NULL,
+    "stock" INTEGER[],
+    "price" DOUBLE PRECISION NOT NULL,
     "provider" TEXT NOT NULL,
     "region" TEXT NOT NULL,
     "sku" TEXT NOT NULL,
     "publisher" TEXT NOT NULL,
-    "availabilityStatus" TEXT NOT NULL,
+    "status" TEXT NOT NULL,
     "promotionStart" TIMESTAMP(3),
     "promotionEnd" TIMESTAMP(3),
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "gameCode" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
 );
@@ -84,19 +59,23 @@ CREATE TABLE "Pricing" (
 -- CreateTable
 CREATE TABLE "SalesOrder" (
     "id" TEXT NOT NULL,
-    "salesOrderNumber" TEXT NOT NULL,
     "customerId" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
-    "sku" TEXT NOT NULL,
+    "salesVat" DOUBLE PRECISION NOT NULL,
     "salesIncVat" DOUBLE PRECISION NOT NULL,
-    "salesExcVat" DOUBLE PRECISION NOT NULL,
+    "salesExtVat" DOUBLE PRECISION NOT NULL,
     "expectedCost" DOUBLE PRECISION NOT NULL,
-    "calculatedAvgCost" DOUBLE PRECISION,
-    "quantity" INTEGER NOT NULL,
+    "avgCost" DOUBLE PRECISION NOT NULL,
+    "processQuantity" INTEGER NOT NULL,
+    "totalQuantity" INTEGER NOT NULL,
     "salesCurrency" TEXT NOT NULL,
     "totalPrice" DOUBLE PRECISION NOT NULL,
-    "createdOn" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3) NOT NULL,
+    "status" TEXT NOT NULL,
+    "N_A" TEXT NOT NULL,
     "confirmed" BOOLEAN NOT NULL DEFAULT false,
+    "createdOn" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "SalesOrder_pkey" PRIMARY KEY ("id")
 );
@@ -105,32 +84,20 @@ CREATE TABLE "SalesOrder" (
 CREATE TABLE "PurchaseOrder" (
     "id" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
-    "sku" TEXT NOT NULL,
-    "productName" TEXT NOT NULL,
-    "provider" TEXT NOT NULL,
-    "quantity" INTEGER NOT NULL,
-    "sales" DOUBLE PRECISION NOT NULL,
-    "expectedCost" DOUBLE PRECISION NOT NULL,
     "costIncVat" DOUBLE PRECISION NOT NULL,
-    "stocking" TEXT NOT NULL,
+    "costExtVat" DOUBLE PRECISION NOT NULL,
+    "processQuantity" INTEGER NOT NULL,
+    "totalQuantity" INTEGER NOT NULL,
+    "totalPrice" DOUBLE PRECISION NOT NULL,
     "job" INTEGER NOT NULL,
     "status" TEXT NOT NULL,
     "region" TEXT NOT NULL,
-    "startDatePOs" TIMESTAMP(3) NOT NULL,
-    "endDatePOs" TIMESTAMP(3) NOT NULL,
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3) NOT NULL,
     "createdOn" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "salesOrderId" TEXT,
 
     CONSTRAINT "PurchaseOrder_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "PurchaseOrderLink" (
-    "id" TEXT NOT NULL,
-    "salesOrderId" TEXT NOT NULL,
-    "purchaseOrderId" TEXT NOT NULL,
-    "sku" TEXT NOT NULL,
-
-    CONSTRAINT "PurchaseOrderLink_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -381,20 +348,22 @@ CREATE TABLE "EpayData" (
     CONSTRAINT "EpayData_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "User" (
+    "id" SERIAL NOT NULL,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "firstName" TEXT NOT NULL,
+    "lastName" TEXT NOT NULL,
+    "role" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "Customer_email_key" ON "Customer"("email");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Customer_generatedEmail_key" ON "Customer"("generatedEmail");
-
--- CreateIndex
-CREATE UNIQUE INDEX "Customer_ipAddressId_key" ON "Customer"("ipAddressId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "IPAddress_ip_key" ON "IPAddress"("ip");
-
--- CreateIndex
-CREATE UNIQUE INDEX "GeneratedEmail_email_key" ON "GeneratedEmail"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Product_sku_key" ON "Product"("sku");
@@ -406,9 +375,6 @@ CREATE UNIQUE INDEX "StockQty_productId_key" ON "StockQty"("productId");
 CREATE UNIQUE INDEX "Pricing_productId_key" ON "Pricing"("productId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "SalesOrder_salesOrderNumber_key" ON "SalesOrder"("salesOrderNumber");
-
--- CreateIndex
 CREATE UNIQUE INDEX "NintendoData_fs_id_key" ON "NintendoData"("fs_id");
 
 -- CreateIndex
@@ -417,11 +383,8 @@ CREATE UNIQUE INDEX "Store_storeID_key" ON "Store"("storeID");
 -- CreateIndex
 CREATE UNIQUE INDEX "Transaction_transactionID_key" ON "Transaction"("transactionID");
 
--- AddForeignKey
-ALTER TABLE "Customer" ADD CONSTRAINT "Customer_ipAddressId_fkey" FOREIGN KEY ("ipAddressId") REFERENCES "IPAddress"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "GeneratedEmail" ADD CONSTRAINT "GeneratedEmail_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- AddForeignKey
 ALTER TABLE "StockQty" ADD CONSTRAINT "StockQty_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -436,13 +399,10 @@ ALTER TABLE "SalesOrder" ADD CONSTRAINT "SalesOrder_productId_fkey" FOREIGN KEY 
 ALTER TABLE "SalesOrder" ADD CONSTRAINT "SalesOrder_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "PurchaseOrder" ADD CONSTRAINT "PurchaseOrder_salesOrderId_fkey" FOREIGN KEY ("salesOrderId") REFERENCES "SalesOrder"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "PurchaseOrder" ADD CONSTRAINT "PurchaseOrder_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "PurchaseOrderLink" ADD CONSTRAINT "PurchaseOrderLink_salesOrderId_fkey" FOREIGN KEY ("salesOrderId") REFERENCES "SalesOrder"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "PurchaseOrderLink" ADD CONSTRAINT "PurchaseOrderLink_purchaseOrderId_fkey" FOREIGN KEY ("purchaseOrderId") REFERENCES "PurchaseOrder"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ActivationKeys" ADD CONSTRAINT "ActivationKeys_stockQtyId_fkey" FOREIGN KEY ("stockQtyId") REFERENCES "StockQty"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

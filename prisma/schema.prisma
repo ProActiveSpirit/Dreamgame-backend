@@ -16,39 +16,64 @@ generator client {
 // }
 
 model Customer {
-  id               String           @id @default(uuid())
+  id               String       @id @default(uuid())
+  company          String
   name             String
-  email            String           @unique
   website          String
   ip               String
   region           String
-  twoFactorEnabled Boolean          @default(false)
-  apiLogs          APILog[]         @relation(name: "CustomerToAPILog")
-  salesOrders      SalesOrder[]     @relation(name: "CustomerToSalesOrder")
-  crmData          CRMData[]        @relation(name: "CustomerToCRMData")
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
+  email            String       @unique
+  phone            String
+  linkedIn         String
+  skype            String
+  facebook         String
+  twitter          String
+  companyInvoice   String
+  address          String
+  zipCode          String
+  city             String
+  state            String
+  countryCode      String
+  salesRegion      String
+  taxInformation   String
+  salesCurrency    String
+  defaultVatRate   String
+  primaryName      String
+  primarySurname   String
+  primaryEmail     String
+  primaryPhone     String
+  primarySkype     String
+  primaryFacebook  String
+  primaryTwitter   String
+  primaryLinkedIn  String
+  inActive         Boolean
+  twoFactorEnabled Boolean?     @default(false)
+  apiLogs          APILog[]     @relation(name: "CustomerToAPILog")
+  salesOrders      SalesOrder[] @relation(name: "CustomerToSalesOrder")
+  crmData          CRMData[]    @relation(name: "CustomerToCRMData")
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
 }
 
 model Product {
-  id                   String          @id @default(uuid())
-  name                 String
-  stock                Int[]
-  price                Float
-  provider             String
-  region               String
-  sku                  String          @unique
-  publisher            String
-  status               String
-  promotionStart       DateTime?
-  promotionEnd         DateTime?
-  updatedAt            DateTime        @updatedAt
-  createdAt            DateTime        @default(now())
-  salesOrders          SalesOrder[]    @relation(name: "ProductSales")
-  pricing              Pricing?        @relation(name: "PricingToProduct")
-  purchaseOrders       PurchaseOrder[] @relation(name: "ProductPurchase")
-  stockQty             StockQty?       @relation(name: "ProductToStockQty")
-  packages             Package[]       @relation(name: "PackageToProduct")
+  id             String          @id @default(uuid())
+  name           String
+  stock          Int[]
+  price          Float
+  provider       String
+  region         String
+  sku            String          @unique
+  publisher      String
+  status         String
+  promotionStart DateTime?
+  promotionEnd   DateTime?
+  updatedAt      DateTime        @updatedAt
+  createdAt      DateTime        @default(now())
+  salesOrders    SalesOrder[]    @relation(name: "ProductSales")
+  pricing        Pricing?        @relation(name: "PricingToProduct")
+  purchaseOrders PurchaseOrder[] @relation(name: "ProductPurchase")
+  stockQty       StockQty?       @relation(name: "ProductToStockQty")
+  packages       Package[]       @relation(name: "PackageToProduct")
 }
 
 // StockQty Model
@@ -74,47 +99,47 @@ model Pricing {
 }
 
 model SalesOrder {
-  id                String              @id @default(uuid())
-  customerId        String
-  productId         String
-  salesVat          Float
-  salesIncVat       Float
-  salesExtVat       Float
-  expectedCost      Float
-  avgCost           Float
-  processQuantity   Int
-  totalQuantity     Int
-  salesCurrency     String
-  totalPrice        Float
-  startDate         DateTime
-  endDate           DateTime
-  status            String
-  N_A               String
-  confirmed         Boolean             @default(false)
-  createdOn         DateTime            @default(now())
-  product           Product             @relation(name: "ProductSales", fields: [productId], references: [id])
-  customer          Customer            @relation(name: "CustomerToSalesOrder", fields: [customerId], references: [id])
-  packages          Package[]           @relation(name: "PackageToSalesOrder")
-  purchaseOrders    PurchaseOrder[]     @relation("SalesToPurchaseOrder") // Updated relation
+  id              String          @id @default(uuid())
+  customerId      String
+  productId       String
+  salesVat        Float
+  salesIncVat     Float
+  salesExtVat     Float
+  expectedCost    Float
+  avgCost         Float
+  processQuantity Int
+  totalQuantity   Int
+  salesCurrency   String
+  totalPrice      Float
+  startDate       DateTime
+  endDate         DateTime
+  status          String
+  N_A             String
+  confirmed       Boolean         @default(false)
+  createdOn       DateTime        @default(now())
+  product         Product         @relation(name: "ProductSales", fields: [productId], references: [id])
+  customer        Customer        @relation(name: "CustomerToSalesOrder", fields: [customerId], references: [id])
+  packages        Package[]       @relation(name: "PackageToSalesOrder")
+  purchaseOrders  PurchaseOrder[] @relation("SalesToPurchaseOrder") // Updated relation
 }
 
 model PurchaseOrder {
-  id                String              @id @default(uuid())
-  productId         String
-  costIncVat        Float
-  costExtVat        Float
-  processQuantity   Int
-  totalQuantity     Int
-  totalPrice        Float
-  job               Int
-  status            String
-  region            String
-  startDate         DateTime
-  endDate           DateTime
-  createdOn         DateTime            @default(now())
-  salesOrderId      String?             // New field to link a sales order
-  salesOrder        SalesOrder?         @relation("SalesToPurchaseOrder", fields: [salesOrderId], references: [id])
-  product           Product             @relation(name: "ProductPurchase", fields: [productId], references: [id])
+  id              String      @id @default(uuid())
+  productId       String
+  costIncVat      Float
+  costExtVat      Float
+  processQuantity Int
+  totalQuantity   Int
+  totalPrice      Float
+  job             Int
+  status          String
+  region          String
+  startDate       DateTime
+  endDate         DateTime
+  createdOn       DateTime    @default(now())
+  salesOrderId    String? // New field to link a sales order
+  salesOrder      SalesOrder? @relation("SalesToPurchaseOrder", fields: [salesOrderId], references: [id])
+  product         Product     @relation(name: "ProductPurchase", fields: [productId], references: [id])
 }
 
 // BillingInformation Model
@@ -235,122 +260,122 @@ model CRMData {
 // nintendoData Model
 
 model NintendoData {
-  id               String   @id @default(uuid()) 
-  fs_id            String?  @unique
-  change_date      DateTime?
-  url              String?
-  type             String?
-  dates_released_dts DateTime[] 
-  club_nintendo    Boolean?
-  pretty_date_s    String?
-  play_mode_tv_mode_b Boolean?
-  play_mode_handheld_mode_b Boolean?
-  product_code_txt  String[]
-  image_url_sq_s   String?
-  deprioritise_b   Boolean?
-  demo_availability Boolean?
-  pg_s            String?
-  compatible_controller String[]
-  originally_for_t String?
-  paid_subscription_required_b Boolean?
-  cloud_saves_b Boolean?
-  priority        DateTime?
-  digital_version_b Boolean?
-  title_extras_txt  String[]
-  image_url_h2x1_s  String?
-  system_type       String[]
-  age_rating_sorting_i Int?
-  game_categories_txt String[]
-  play_mode_tabletop_mode_b Boolean?
-  publisher         String
-  product_code_ss   String[]
-  excerpt         String
-  nsuid_txt       String[]
-  date_from       DateTime
-  language_availability  String[]
-  price_has_discount_b Boolean?
-  product_catalog_description_s String?
-  related_nsuids_txt String[]
-  price_discount_percentage_f Int?
-  title String?
-  sorting_title String?
-  wishlist_email_square_image_url_s String?
-  players_to Int?
+  id                                    String     @id @default(uuid())
+  fs_id                                 String?    @unique
+  change_date                           DateTime?
+  url                                   String?
+  type                                  String?
+  dates_released_dts                    DateTime[]
+  club_nintendo                         Boolean?
+  pretty_date_s                         String?
+  play_mode_tv_mode_b                   Boolean?
+  play_mode_handheld_mode_b             Boolean?
+  product_code_txt                      String[]
+  image_url_sq_s                        String?
+  deprioritise_b                        Boolean?
+  demo_availability                     Boolean?
+  pg_s                                  String?
+  compatible_controller                 String[]
+  originally_for_t                      String?
+  paid_subscription_required_b          Boolean?
+  cloud_saves_b                         Boolean?
+  priority                              DateTime?
+  digital_version_b                     Boolean?
+  title_extras_txt                      String[]
+  image_url_h2x1_s                      String?
+  system_type                           String[]
+  age_rating_sorting_i                  Int?
+  game_categories_txt                   String[]
+  play_mode_tabletop_mode_b             Boolean?
+  publisher                             String
+  product_code_ss                       String[]
+  excerpt                               String
+  nsuid_txt                             String[]
+  date_from                             DateTime
+  language_availability                 String[]
+  price_has_discount_b                  Boolean?
+  product_catalog_description_s         String?
+  related_nsuids_txt                    String[]
+  price_discount_percentage_f           Int?
+  title                                 String?
+  sorting_title                         String?
+  wishlist_email_square_image_url_s     String?
+  players_to                            Int?
   wishlist_email_banner640w_image_url_s String?
-  paid_subscription_online_play_b Boolean?
-  playable_on_txt String[]
-  hits_i Int?
-  pretty_game_categories_txt String[]
-  title_master_s String?
-  switch_game_voucher_b Boolean?
-  game_category  String[]
-  system_names_txt String[]
-  pretty_agerating_s String?
-  price_regular_f Float?
-  eshop_removed_b Boolean?
-  age_rating_type String?
-  price_sorting_f Float?
-  price_lowest_f  Float?
-  age_rating_value String?
-  physical_version_b Boolean?
+  paid_subscription_online_play_b       Boolean?
+  playable_on_txt                       String[]
+  hits_i                                Int?
+  pretty_game_categories_txt            String[]
+  title_master_s                        String?
+  switch_game_voucher_b                 Boolean?
+  game_category                         String[]
+  system_names_txt                      String[]
+  pretty_agerating_s                    String?
+  price_regular_f                       Float?
+  eshop_removed_b                       Boolean?
+  age_rating_type                       String?
+  price_sorting_f                       Float?
+  price_lowest_f                        Float?
+  age_rating_value                      String?
+  physical_version_b                    Boolean?
   wishlist_email_banner460w_image_url_s String?
-  downloads_rank_i Int?
-  version  String?
-  region String
+  downloads_rank_i                      Int?
+  version                               String?
+  region                                String
 }
-  
+
 model Store {
-  id             Int            @id @default(autoincrement())
-  storeID        String         @unique
-  transactions   Transaction[]
+  id           Int           @id @default(autoincrement())
+  storeID      String        @unique
+  transactions Transaction[]
 }
 
 model Transaction {
-  id             Int            @id @default(autoincrement())
-  transactionID  String         @unique
-  status         Int
-  fulfillments   Fulfillment[]
-  store          Store          @relation(fields: [storeId], references: [id])
-  storeId        Int
+  id            Int           @id @default(autoincrement())
+  transactionID String        @unique
+  status        Int
+  fulfillments  Fulfillment[]
+  store         Store         @relation(fields: [storeId], references: [id])
+  storeId       Int
 }
 
 model Fulfillment {
-  id             Int            @id @default(autoincrement())
-  sku            String         
-  status         Int
-  qty            Int
-  codes          Code[]
-  transaction    Transaction    @relation(fields: [transactionId], references: [id])
-  transactionId  Int
+  id            Int         @id @default(autoincrement())
+  sku           String
+  status        Int
+  qty           Int
+  codes         Code[]
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  transactionId Int
 }
 
 model Code {
-  id             Int            @id @default(autoincrement())
+  id             Int         @id @default(autoincrement())
   controlNumber  String
   downloadNumber String
   status         Int
-  fulfillment    Fulfillment    @relation(fields: [fulfillmentId], references: [id])
+  fulfillment    Fulfillment @relation(fields: [fulfillmentId], references: [id])
   fulfillmentId  Int
 }
 
 model EpayData {
-  id             Int            @id @default(autoincrement())
-  name           String
-  price          Float
-  sku            String
+  id    Int    @id @default(autoincrement())
+  name  String
+  price Float
+  sku   String
 }
 
 model User {
-  id                      Int      @id @default(autoincrement())
-  email                   String   @unique
-  password                String
-  firstName               String
-  lastName                String
-  role                    String
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  role      String
   // adminVerified           Boolean  @default(false)
   // emailVerified           Boolean  @default(false)
   // verificationCode        String?
   // verificationCodeExpires DateTime?
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
