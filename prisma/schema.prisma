@@ -48,12 +48,11 @@ model Customer {
   primaryLinkedIn  String
   inActive         Boolean
   twoFactorEnabled Boolean?     @default(false)
+  apiLogs          APILog[]     @relation(name: "CustomerToAPILog")
   salesOrders      SalesOrder[] @relation(name: "CustomerToSalesOrder")
   crmData          CRMData[]    @relation(name: "CustomerToCRMData")
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
-  APILog           APILog[]
-  APILog           APILog[]
 }
 
 model Product {
@@ -247,7 +246,6 @@ model APILog {
   requestData  Json // Data sent to API, using Json type for flexibility
   responseData Json // Data received from API, also using Json type
   timestamp    DateTime  @default(now()) // Time of interaction
-  Customer     Customer? @relation(fields: [customerId], references: [id])
 }
 
 // CRMData Model
