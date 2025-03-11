@@ -40,6 +40,7 @@ exports.setup2FA = async (req, res) => {
       success: true,
       data: {
         qrCode: qrCodeUrl,
+        otpauth_url: secret.otpauth_url,
         secret: secret.base32
       }
     });
