@@ -8,7 +8,6 @@ async function getSalesAll(req, res) {
     const salesOrders = await prisma.salesOrder.findMany({
       include: {
         product: true, // Include the related Product details
-        customer: true, // Include the related Customer details
       }
     }); // Fetch all sales orders
     res.status(200).json({ salesOrders });
@@ -22,7 +21,7 @@ async function getSalesAll(req, res) {
 // Add a New Sales Order
 // ------------------------------------------------------
 async function addSales(req, res) {
-  const { salesIncVat, salesVat, salesExtVat, salesCurrency, Quantity, endDate, startDate, Customer, Product} = req.body;
+  const { salesIncVat, salesVat, salesExtVat, salesCurrency, Quantity, endDate, startDate, Product} = req.body;
 
   // if (!name || !quantity || !price) {
   //   return res.status(400).json({ success: false, message: "All fields are required" });
@@ -31,7 +30,6 @@ async function addSales(req, res) {
     // Create a new sales order
     const newSalesOrder = await prisma.salesOrder.create({
       data: {
-        customerId: Customer,
         productId: Product,
         salesVat,
         salesIncVat,
@@ -77,7 +75,7 @@ async function editSales(req, res) {
       },
     });
 
-    res.status(200).json({ success: true, data: updatedSalesOrder });
+    res.status(200).json({ success: true, data: updatedSalesOrder }); 
   } catch (error) {
     console.error("Error editing sales order:", error.message);
     res.status(500).json({ success: false, error: error.message });

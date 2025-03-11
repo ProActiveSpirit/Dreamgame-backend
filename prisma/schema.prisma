@@ -8,53 +8,6 @@ generator client {
   binaryTargets = ["native", "rhel-openssl-1.0.x", "rhel-openssl-3.0.x"]
 }
 
-// // Enum for Customer Status
-// enum CustomerStatus {
-//   ACTIVE
-//   INACTIVE
-//   TEST
-// }
-
-model Customer {
-  id               String       @id @default(uuid())
-  company          String
-  name             String
-  website          String
-  ip               String
-  region           String
-  email            String       @unique
-  phone            String
-  linkedIn         String
-  skype            String
-  facebook         String
-  twitter          String
-  companyInvoice   String
-  address          String
-  zipCode          String
-  city             String
-  state            String
-  countryCode      String
-  salesRegion      String
-  taxInformation   String
-  salesCurrency    String
-  defaultVatRate   String
-  primaryName      String
-  primarySurname   String
-  primaryEmail     String
-  primaryPhone     String
-  primarySkype     String
-  primaryFacebook  String
-  primaryTwitter   String
-  primaryLinkedIn  String
-  inActive         Boolean
-  twoFactorEnabled Boolean?     @default(false)
-  apiLogs          APILog[]     @relation(name: "CustomerToAPILog")
-  salesOrders      SalesOrder[] @relation(name: "CustomerToSalesOrder")
-  crmData          CRMData[]    @relation(name: "CustomerToCRMData")
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
-}
-
 model Product {
   id             String          @id @default(uuid())
   name           String
@@ -100,7 +53,6 @@ model Pricing {
 
 model SalesOrder {
   id              String          @id @default(uuid())
-  customerId      String
   productId       String
   salesVat        Float
   salesIncVat     Float
@@ -118,7 +70,6 @@ model SalesOrder {
   confirmed       Boolean         @default(false)
   createdOn       DateTime        @default(now())
   product         Product         @relation(name: "ProductSales", fields: [productId], references: [id])
-  customer        Customer        @relation(name: "CustomerToSalesOrder", fields: [customerId], references: [id])
   packages        Package[]       @relation(name: "PackageToSalesOrder")
   purchaseOrders  PurchaseOrder[] @relation("SalesToPurchaseOrder") // Updated relation
 }
@@ -165,7 +116,6 @@ model ActivationKeys {
   pendingStocks    Int
   processingStocks Boolean
   totalKey         Int
-  customerUserId   String
 }
 
 // Package Model
@@ -174,7 +124,6 @@ model Package {
   product        Product    @relation(name: "PackageToProduct", fields: [productId], references: [id])
   salesOrderId   String
   salesOrder     SalesOrder @relation(name: "PackageToSalesOrder", fields: [salesOrderId], references: [id])
-  customerUserId String
   productId      String
   createdOn      DateTime   @default(now())
   startDate      DateTime
@@ -241,8 +190,6 @@ model MonthlyPurchased {
 // APILog Model
 model APILog {
   id           String    @id @default(uuid()) // LogID as a unique identifier
-  customerId   String? // Foreign key referencing Customer
-  customer     Customer? @relation(name: "CustomerToAPILog", fields: [customerId], references: [id])
   requestData  Json // Data sent to API, using Json type for flexibility
   responseData Json // Data received from API, also using Json type
   timestamp    DateTime  @default(now()) // Time of interaction
@@ -251,10 +198,8 @@ model APILog {
 // CRMData Model
 model CRMData {
   id               String   @id @default(uuid()) // CRMID as a unique identifier
-  customerId       String // Foreign key referencing Customer
   interactionNotes String? // Notes on customer interactions
   lastUpdated      DateTime @default(now()) @updatedAt // Timestamp for last update
-  customer         Customer @relation(name: "CustomerToCRMData", fields: [customerId], references: [id])
 }
 
 // nintendoData Model
@@ -373,9 +318,12 @@ model User {
   lastName  String
   role      String
   // adminVerified           Boolean  @default(false)
-  // emailVerified           Boolean  @default(false)
-  // verificationCode        String?
-  // verificationCodeExpires DateTime?
+  emailVerified           Boolean  @default(false)
+  verificationCode        String?
+  verificationCodeExpires DateTime?
+  isTwoFactorEnabled Boolean?
+  twoFactorSecret    String?
+  tempSecret         String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
