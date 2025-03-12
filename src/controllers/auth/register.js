@@ -1,67 +1,91 @@
-const nodemailer = require('nodemailer');
-const bcrypt = require('bcrypt');
-const prisma = require('../../prisma');
+const bcrypt = require("bcrypt");
+const prisma = require("../../prisma");
+const formData = require("form-data");
+const Mailgun = require("mailgun.js");
 
 function generateVerificationCode() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-const transporter = nodemailer.createTransport({
-  service: 'Gmail', // or another email service
-  auth: {
-    user: process.env.EMAIL, // your email
-    pass: process.env.EMAIL_PASSWORD, // your email password
-  },
-});
+async function sendVerificationEmail(name, email, code) {
+  const mailgun = new Mailgun(FormData);
+  const mg = mailgun.client({
+    username: "api",
+    key: process.env.MAILGUN_API_KEY || "API_KEY",
+  });
 
-async function sendVerificationEmail(email, code) {
-  const mailOptions = {
-    from: process.env.EMAIL,
-    to: email,
-    subject: 'Email Verification',
-    text: `Your verification code is ${code}`,
-  };
-  console.log("mailOptions" , mailOptions);
-  await transporter.sendMail(mailOptions);
+  try {
+    const data = await mg.messages.create(process.env.MAILGUN_DOMAIN, {
+      from: `Dreamgame <noreply@${process.env.MAILGUN_DOMAIN}>`,
+      to: [`${name} <${email}>`],
+      subject: "Email Verification",
+      // text: `Your verification code is ${code}`,
+      html: `
+        <h2>Email Verification</h2>
+        <p>Your verification code is: <strong>${code}</strong></p>
+        <p>This code will expire in 10 minutes.</p>
+      `,
+    });
+
+    console.log(data); // logs response data
+  } catch (error) {
+    console.log(error); //logs any error
+  }
 }
 
 async function register(req, res) {
-  const { email, password, firstName, lastName } = req.body;
-  const passwordHash = await bcrypt.hash(password, 10);
-  const verificationCode = generateVerificationCode();
-  const verificationCodeExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
-
   try {
-    // const deleteResult = await prisma.user.deleteMany({});
+    const { email, password, firstName, lastName } = req.body;
+    const passwordHash = await bcrypt.hash(password, 10);
+    const verificationCode = generateVerificationCode();
+    const verificationCodeExpires = new Date(Date.now() + 10 * 60 * 1000);
 
     const existingUser = await prisma.user.findUnique({
-      where: { email }
+      where: { email },
     });
 
-    console.log("existingUser" , existingUser);
-
     if (existingUser) {
-      return res.status(400).json({ message: 'This email is already registered.' });
+      return res
+        .status(400)
+        .json({ message: "This email is already registered." });
     }
 
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email,
         password: passwordHash,
-        firstName,  
+        firstName,
         lastName,
-        role:"user",
+        role: "user",
         verificationCode,
-        verificationCodeExpires
+        verificationCodeExpires,
       },
     });
 
-    // await sendVerificationEmail(email, verificationCode);
+    try {
+      await sendVerificationEmail(
+        firstName + lastName,
+        "puddingbear0217@gmail.com",
+        verificationCode
+      );
+    } catch (emailError) {
+      // If email fails, delete the created user
+      await prisma.user.delete({
+        where: { id: user.id },
+      });
+      throw emailError;
+    }
 
-    res.json({ message: 'Registration successful, please check your email for the verification code.' });
+    res.json({
+      message:
+        "Registration successful, please check your email for the verification code.",
+    });
   } catch (error) {
-    console.error(error);
-    res.status(400).json({ error: 'User registration failed' });
+    console.error("Registration error:", error);
+    res.status(500).json({
+      error: "Registration failed",
+      details: error.details || error.message,
+    });
   }
 }
 
