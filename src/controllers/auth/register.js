@@ -35,6 +35,23 @@ async function sendVerificationEmail(name, email, code) {
 async function register(req, res) {
   try {
     const { email, password, firstName, lastName } = req.body;
+    
+    // Check if password is provided
+    if (!password) {
+      return res.status(400).json({ 
+        error: "Registration failed", 
+        details: "Password is required" 
+      });
+    }
+    
+    // Check if all required fields are provided
+    if (!email || !firstName || !lastName) {
+      return res.status(400).json({ 
+        error: "Registration failed", 
+        details: "All fields (email, password, firstName, lastName) are required" 
+      });
+    }
+
     const passwordHash = await bcrypt.hash(password, 10);
     const verificationCode = generateVerificationCode();
     const verificationCodeExpires = new Date(Date.now() + 10 * 60 * 1000);
@@ -58,13 +75,14 @@ async function register(req, res) {
         role: "user",
         verificationCode,
         verificationCodeExpires,
+        emailVerified: false, // Explicitly set to false
       },
     });
 
     try {
       await sendVerificationEmail(
-        firstName + lastName,
-        "puddingbear0217@gmail.com",
+        firstName + " " + lastName, // Added space between first and last name
+        email, // Use the actual user's email instead of hardcoded one
         verificationCode
       );
     } catch (emailError) {
