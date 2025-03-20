@@ -7,7 +7,6 @@ const authRoutes = require("./auth");
 const userRoutes = require("./user");
 const orderRoutes = require("./order");
 const productRoutes = require("./product");
-const checkoutRoutes = require("./checkout");
 
 const router = express.Router();
 
@@ -19,7 +18,6 @@ router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
 router.use("/order", orderRoutes);
 router.use("/product", productRoutes);
-router.use("/checkout", checkoutRoutes);
 
 router.get("/", (req, res) => {
   return res.status(200).json({ message: "Ok" });

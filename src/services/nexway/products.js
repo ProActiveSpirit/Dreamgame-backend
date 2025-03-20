@@ -37,25 +37,25 @@ async function getProducts() {
     }));
 
     // Perform the database operations
-    async function saveDataToDatabase() {
-      await Promise.all(transformedData.map(async (data) => {
-        await prisma.product.create({
-          data: {
-            name: data.name,
-            stock: data.stock,
-            price: data.price,
-            provider: data.provider,
-            region: data.region,
-            sku: data.sku,
-            publisher: data.publisher,
-            status: data.price ? "Active": "InActive",
-          }
-        });
-      }));
-    }
+    // async function saveDataToDatabase() {
+    //   await Promise.all(transformedData.map(async (data) => {
+    //     await prisma.product.create({
+    //       data: {
+    //         name: data.name,
+    //         stock: data.stock,
+    //         price: data.price,
+    //         provider: data.provider,
+    //         region: data.region,
+    //         sku: data.sku,
+    //         publisher: data.publisher,
+    //         status: data.price ? "Active": "InActive",
+    //       }
+    //     });
+    //   }));
+    // }
 
     // Call the function to execute it
-    saveDataToDatabase().catch(console.error);
+    // saveDataToDatabase().catch(console.error);
 
     
     return transformedData;

@@ -21,34 +21,41 @@ async function getPurchaseAll(req, res) {
 // Add a New Purchase Order
 // ------------------------------------------------------
 async function addPurchase(req, res) {
-  const { Product, Quantity, Region, costExtVat, costIncVat, startDate, endDate  } = req.body;
+  const { Product, Quantity, Region, costExtVat, costIncVat, startDate, endDate } = req.body;
 
   // if (!name || !quantity || !price) {
   //   return res.status(400).json({ success: false, message: "All fields are required" });
   // }
+
   try {
     // Create a new purchase order
-    await Promise.all(
-      Region.map((r) =>
-        prisma.purchaseOrder.create({
+    console.log("Region", Region);
+    const response = await Promise.all(
+      Region.map((r) => {
+        console.log("r", r);
+        return prisma.purchaseOrder.create({
           data: {
-            productId: Product,
             costIncVat: parseFloat(costIncVat),
             costExtVat: parseFloat(costExtVat),
             processQuantity: 0,
-            region: r.title, // Store each region as a single-element array
+            region: r,
             totalQuantity: parseInt(Quantity),
             totalPrice: parseFloat(costExtVat * Quantity),
             startDate: new Date(startDate),
-            endDate: new Date(endDate),
+            // endDate: endDate ? new Date(endDate) : null,
             job: 1,
             status: "Processing",
+            product: {
+              connect: {
+                id: Product // Use the Product ID to connect to existing product
+              }
+            }
           },
-        })
-      )
+        });
+      })
     );
 
-    res.status(200).json({ success: true, data: [] });
+    res.status(200).json({ success: true, data: response });
   } catch (error) {
     console.error("Error adding purchase order:", error.message);
     res.status(500).json({ success: false, error: error.message });

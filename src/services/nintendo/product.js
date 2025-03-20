@@ -20,27 +20,27 @@ async function getProducts() {
         // region_sku: game.region + game.product_code_txt[0]
       };
     });
-    console.log("allResults" , allResults);
+    // console.log("allResults" , allResults);
      // Perform the database operations
-     async function saveDataToDatabase() {
-      await Promise.all(allResults.map(async (data) => {
-        await prisma.product.create({
-          data: {
-            name: data.name,
-            stock: data.stock,
-            price: data.price,
-            provider: data.provider,
-            region: data.region,
-            sku: data.sku,
-            publisher: data.publisher,
-            status: data.price ? "Active": "InActive",
-          }
-        });
-      }));
-    }
+    //  async function saveDataToDatabase() {
+    //   await Promise.all(allResults.map(async (data) => {
+    //     await prisma.product.create({
+    //       data: {
+    //         name: data.name,
+    //         stock: data.stock,
+    //         price: data.price,
+    //         provider: data.provider,
+    //         region: data.region,
+    //         sku: data.sku,
+    //         publisher: data.publisher,
+    //         status: data.price ? "Active": "InActive",
+    //       }
+    //     });
+    //   }));
+    // }
 
-    // Call the function to execute it
-    saveDataToDatabase().catch(console.error);
+    // // Call the function to execute it
+    // saveDataToDatabase().catch(console.error);
 
   } catch (error) {
     console.error(

@@ -86,7 +86,6 @@ model PurchaseOrder {
   status          String
   region          String
   startDate       DateTime
-  endDate         DateTime
   createdOn       DateTime    @default(now())
   salesOrderId    String? // New field to link a sales order
   salesOrder      SalesOrder? @relation("SalesToPurchaseOrder", fields: [salesOrderId], references: [id])

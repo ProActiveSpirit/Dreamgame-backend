@@ -78,9 +78,6 @@ exports.enable2FA = async (req, res) => {
       encoding: 'base32',
       token: token
     });
-    console.log("user.tempSecret" , user.tempSecret);
-    console.log("token" , token);
-    console.log("verified" , verified);
     if (!verified) {
       return res.status(400).json({
         success: false,
@@ -135,9 +132,6 @@ exports.verify2FA = async (req, res) => {
       encoding: 'base32',
       token: token
     });
-    console.log("user.twoFactorSecret" , user.twoFactorSecret);
-    console.log("token" , token);
-    console.log("verified" , verified);
     if (!verified) {
       return res.status(401).json({
         success: false,
@@ -159,7 +153,6 @@ exports.verify2FA = async (req, res) => {
 };
 
 exports.get2FAStatus = async (req, res) => {
-  console.log("get2FAStatus" , req.body);
   const email = req.body.email;
   const user = await prisma.user.findUnique({
     where: {
@@ -190,15 +183,12 @@ exports.get2FAStatus = async (req, res) => {
 exports.disable2FA = async (req, res) => {
   try {
     const { token , email } = req.body;
-    console.log("token" , token);
-    console.log("email" , email);
     // Find user using Prisma
     const user = await prisma.user.findUnique({
       where: {
         email
       }
     });
-    console.log("user" , user);
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -212,7 +202,6 @@ exports.disable2FA = async (req, res) => {
       encoding: 'base32',
       token: token
     });
-    console.log("verified"  ,verified);
 
     if (!verified) {
       return res.status(401).json({
