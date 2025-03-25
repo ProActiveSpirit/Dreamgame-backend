@@ -21,13 +21,12 @@ async function createCustomer(req, res) {
 
   try {
     const existingUser = await prisma.customer.findMany({
-      where: { email: req.body.email },
+      where: { name: req.body.name },
     });
-    console.log("existingUser", existingUser);
     if (existingUser.length != 0) {
       return res
         .status(400)
-        .json({ message: "This email is already registered." });
+        .json({ message: "This Display Name is already registered." });
     }
 
     await prisma.customer.create({
@@ -38,15 +37,13 @@ async function createCustomer(req, res) {
       },
     });
 
-    // await sendVerificationEmail(email, verificationCode);
-
     res.json({
       message:
-        "Registration successful, please check your email for the verification code.",
+        "Registration successful",
     });
   } catch (error) {
     console.error(error);
-    res.status(400).json({ error: "User registration failed" });
+    res.status(400).json({ error: "Customer registration failed" });
   }
 }
 

@@ -51,7 +51,7 @@ async function addPurchase(req, res) {
               }
             }
           },
-        });
+        });6              
       })
     );
 
