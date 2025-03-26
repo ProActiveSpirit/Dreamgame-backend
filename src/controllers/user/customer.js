@@ -1,4 +1,5 @@
-const prisma = require("../../prisma");
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 const axios = require("axios");
 
 async function getCustomer(req, res) {
@@ -50,64 +51,52 @@ async function createCustomer(req, res) {
 async function updateCustomer(req, res) {
   try {
     const existingUser = await prisma.customer.findMany({
-      where: { email: req.body.email },
+      where: { id: req.body.id },
     });
-    console.log("existingUser", existingUser);
-    if (existingUser.length != 0) {
+    if (existingUser.length == 0) {
       return res
         .status(400)
-        .json({ message: "This email is already registered." });
+        .json({ message: "This customer not found." });
     }
 
-    await prisma.customer.create({
+    await prisma.customer.update({
+      where: { id: req.body.id },
       data: {
         ...req.body,
-        ip: userIp,
-        region: response.data.country ?? "",
       },
     });
 
-    // await sendVerificationEmail(email, verificationCode);
-
     res.json({
       message:
-        "Registration successful, please check your email for the verification code.",
+        "Customer updated successfully.",
     });
   } catch (error) {
     console.error(error);
-    res.status(400).json({ error: "User registration failed" });
+    res.status(400).json({ error: "Customer update failed" });
   }
 }
 
 async function deleteCustomer(req, res) {
   try {
     const existingUser = await prisma.customer.findMany({
-      where: { email: req.body.email },
+      where: { id: req.body.id },
     });
-    console.log("existingUser", existingUser);
-    if (existingUser.length != 0) {
-      return res
-        .status(400)
-        .json({ message: "This email is already registered." });
+
+    if (existingUser.length == 0) {
+      return res.status(400).json({ message: "This customer not found." });
     }
 
-    await prisma.customer.create({
-      data: {
-        ...req.body,
-        ip: userIp,
-        region: response.data.country ?? "",
-      },
+    await prisma.customer.delete({
+      where: { id: req.body.id },
     });
-
-    // await sendVerificationEmail(email, verificationCode);
 
     res.json({
       message:
-        "Registration successful, please check your email for the verification code.",
+        "Customer deleted successfully.",
     });
   } catch (error) {
     console.error(error);
-    res.status(400).json({ error: "User registration failed" });
+    res.status(400).json({ error: "Customer deletion failed" });
   }
 }
 

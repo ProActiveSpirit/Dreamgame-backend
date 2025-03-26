@@ -58,8 +58,7 @@ async function addSales(req, res) {
 // Edit an Existing Sales Order
 // ------------------------------------------------------
 async function editSales(req, res) {
-  const { id, name, quantity, price } = req.body;
-
+  const { id, expectedCost, endDate} = req.body;
   if (!id) {
     return res.status(400).json({ success: false, message: "Sales order ID is required" });
   }
@@ -67,11 +66,10 @@ async function editSales(req, res) {
   try {
     // Update the sales order with the provided fields
     const updatedSalesOrder = await prisma.salesOrder.update({
-      where: { id: parseInt(id) },
+      where: { id },
       data: {
-        ...(name && { name }),
-        ...(quantity && { quantity: parseInt(quantity) }),
-        ...(price && { price: parseFloat(price) }),
+        ...(expectedCost && { expectedCost: parseFloat(expectedCost) }),
+        ...(endDate && { endDate: endDate }),
       },
     });
 
