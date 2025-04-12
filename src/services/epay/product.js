@@ -13,11 +13,13 @@ async function getProducts() {
       "utf8"
     );
     const skuData = fs.readFileSync(path.join(__dirname, "sku.txt"), "utf8");
+    const drmData = fs.readFileSync(path.join(__dirname, "drm.txt"), "utf8");
     
     // Parse the JSON data
     const names = nameData.split("\n").filter(Boolean);
     const prices = priceData.split("\n").filter(Boolean);
     const skus = skuData.split("\n").filter(Boolean);
+    const drm = drmData.split("\n").filter(Boolean);
 
     // // Check if all arrays have the same length
     // if (names.length !== prices.length || names.length !== skus.length) {
@@ -32,7 +34,7 @@ async function getProducts() {
       provider: "Epay",
       region: "en,de,fr,es,it,nl,pt",
       sku: skus[index].trim(),
-      publisher: "Epay",
+      publisher: drm[index].trim(),
       status: parseFloat(prices[index].trim()) ? "Active": "InActive",
     }));
 
